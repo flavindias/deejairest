@@ -1,0 +1,55 @@
+{
+  "name": "deejAI API",
+  "version": "1.0.0",
+  "description": "A Simple REST Api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flavindias/deejairest.git"
+  },
+  "keywords": [
+    "Spotify",
+    "AI",
+    "REST",
+    "NodeJS"
+  ],
+  "author": "",
+  "contributors": [
+    "Bruno Vitorino Cortez de Lira <bvcl@cin.ufpe.br>",
+    "Caio Rocha Pereira <crp3@cin.ufpe.br>",
+    "Flaviano Dias <fdf2@cin.ufpe.br>",
+    "Homero Barros da Costa Junior <hbcj@cin.ufpe.br>",
+    "Igor Dias da Silva <ids3@cin.ufpe.br>",
+    "Jardel Nascimento <jhn@cin.ufpe.br>",
+    "Joao Vasconcelos <jvsn@cin.ufpe.br>",
+    "Lucas Cabral <lcc4@cin.ufpe.br>",
+    "Pedro Lins de Araujo Lima <plal@cin.ufpe.br>",
+    "Pedro Carmo <prxc@cin.ufpe.br>",
+    "Valter Jorge da Silva <vjs3@cin.ufpe.br>",
+    "Victor Di Cavalcanti Niceas <vdcn@cin.ufpe.br>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/flavindias/deejairest/issues"
+  },
+  "homepage": "https://github.com/flavindias/deejairest#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.0.0",
+    "express": "^4.16.4",
+    "helmet": "^3.18.0",
+    "mongoose": "^5.5.6",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.0"
+  },
+  "devDependencies": {
+    "jest": "^24.7.1",
+    "nodemon": "^1.18.11",
+    "sequelize-auto": "^0.4.29",
+    "sequelize-cli": "^5.4.0",
+    "sqlite3": "^4.0.6"
+  }
+}
