@@ -1,11 +1,31 @@
 # deejAI REST
-A Simple REST Api
+A Simple REST API
 
 ## Requirements
 * Node
 * NPM
 * Express
-* MongoDB
+* Mongoose
+
+### Folder structure
+
+    .
+    ├── __tests__               # Automated tests (alternatively `spec` or `tests`)
+    ├── docs                    # Documentation files (alternatively `doc`)
+    ├── src                     # Source files (alternatively `lib` or `app`)
+    |   ├── app     
+    |   |   ├── controllers     # Controllers folder
+    |   |   ├── middleware      # Middleware folder
+    |   |   └── models          # Models folder
+    |   ├── config              # Database and app config
+    |   └── database    
+    |       └── migragrions     # Migragion folder
+    ├── .env                    # .env development/production environment variables file
+    ├── .env.test               # .env test environment variables file
+    ├── .gitignore              # .gitignore
+    ├── LICENSE
+    ├── package.json            # Dependences info.
+    └── README.md
 
 ## Common setup
 
