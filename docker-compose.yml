@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  app:
+    build: . #onde está o Dockerfile
+    command: npm start
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/app #qual pasta está observando
+  mongo:
+    image: mongo

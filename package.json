@@ -1,10 +1,11 @@
 {
-  "name": "deejAI API",
+  "name": "deejAI-API",
   "version": "1.0.0",
   "description": "A Simple REST Api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/server.js"
   },
   "repository": {
     "type": "git",
@@ -37,13 +38,15 @@
   },
   "homepage": "https://github.com/flavindias/deejairest#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "dotenv": "^8.0.0",
     "express": "^4.16.4",
     "helmet": "^3.18.0",
     "mongoose": "^5.5.6",
     "morgan": "^1.9.1",
-    "passport": "^0.4.0"
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
     "jest": "^24.7.1",
