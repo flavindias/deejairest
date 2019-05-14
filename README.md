@@ -1,4 +1,5 @@
-<img src="https://s3.us-west-2.amazonaws.com/sciouploads/deejai.png" width="200px" height="auto">
+<img src="https://s3.us-west-2.amazonaws.com/sciouploads/deejai.png" width="100" height="auto">
+
 # deejAI REST
 A music recommendation service based on artificial intelligence.
 
