@@ -1,5 +1,5 @@
 # deejAI REST
-A Simple REST API
+A music recommendation service based on artificial intelligence.
 
 ## Requirements
 * Spotify application ID (https://developer.spotify.com/dashboard/applications)
