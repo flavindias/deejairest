@@ -2,6 +2,7 @@
 A Simple REST API
 
 ## Requirements
+* Spotify application ID (https://developer.spotify.com/dashboard/applications)
 * Node
 * NPM
 * Express
