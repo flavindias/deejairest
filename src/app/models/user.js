@@ -28,10 +28,11 @@ const UserSchema = new mongoose.Schema({
     uri: {
         type: String
     },
+    dislikedSongs: [String],
     createdAt: {
         type: Date,
         defaultValue: Date.now()
-    }
+    },
 });
 
 const User  = mongoose.model('User', UserSchema);
