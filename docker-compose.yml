@@ -10,3 +10,5 @@ services:
       - .:/usr/app #qual pasta está observando
   mongo:
     image: mongo
+    ports:
+      - "27017:27017"

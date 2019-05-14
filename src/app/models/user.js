@@ -1,7 +1,5 @@
 const mongoose = require('../../database');
 
-
-
 const UserSchema = new mongoose.Schema({
     birthdate: {
         type: Date

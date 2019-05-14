@@ -49,7 +49,7 @@
     "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "nodemon": "^1.18.11",
     "sequelize-auto": "^0.4.29",
     "sequelize-cli": "^5.4.0",
