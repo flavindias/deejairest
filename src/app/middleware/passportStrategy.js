@@ -3,6 +3,7 @@
 var JWTStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
+
 var User = require('../models/User'),
     config = require('../../config/config');
 
@@ -26,6 +27,5 @@ function hookJWTStrategy(passport) {
             });
     }));
 }
-
 
 module.exports = hookJWTStrategy;

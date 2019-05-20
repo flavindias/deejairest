@@ -28,7 +28,10 @@ const UserSchema = new mongoose.Schema({
     uri: {
         type: String
     },
-    dislikedSongs: [String],
+    dislikedSongs: {
+        type: [String],
+        index: true
+    },
     createdAt: {
         type: Date,
         defaultValue: Date.now()

@@ -6,7 +6,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const express = require('express');
 const passport = require('passport');
-// const hookJWTStrategy = require('./app/middleware/passportStrategy');
+const hookJWTStrategy = require('./app/middleware/passportStrategy');
+const hookSpotifyStrategy = require('./app/middleware/passportSpotifyStrategy');
 
 class AppController {
     constructor(){
@@ -15,7 +16,9 @@ class AppController {
         this.express.use(bodyParser.urlencoded({ extended: false}));
         this.express.use(morgan('dev'));
         this.express.use(passport.initialize());
-        // hookJWTStrategy(passport);
+        hookJWTStrategy(passport);
+        hookSpotifyStrategy(passport);
+
         // this.express.use(express.static(__dirname + '../public'));
         this.routes();
         this.middlewares();

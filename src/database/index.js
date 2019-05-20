@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/deejaidb', {useMongoClient: true});
+mongoose.connect('mongodb://localhost/deejaidb');
 
 mongoose.Promise = global.Promise;
 

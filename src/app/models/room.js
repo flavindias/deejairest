@@ -2,10 +2,16 @@ const mongoose = require('../../database');
 
 const RoomSchema = new mongoose.Schema({
     code:{
-        type: String
+        type: String,
+        required: true
     },
-    owner: String,
-    members: [String],
+    owner: {
+        type: String,
+        required: true
+    },
+    members: {
+        type: [String],
+    },
     location:{
         type: {
             type: String, // Don't do `{ location: { type: String } }`
@@ -17,7 +23,9 @@ const RoomSchema = new mongoose.Schema({
             required: true
         }
     },
-    songs: [String]
+    songs: {
+        type: [String],
+    },
 })
 
 module.exports = mongoose.model('Room', RoomSchema);
