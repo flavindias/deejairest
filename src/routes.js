@@ -9,8 +9,25 @@ var APIRoutes = function(passport) {
         '/auth/spotify',
         passport.authenticate('spotify', {
             scope: [
-                'user-read-email',
-                'user-read-private'],
+                "user-read-recently-played",
+                "user-top-read",
+                "user-library-modify",
+                "user-library-read",
+                "user-read-email",
+                "user-read-birthdate",
+                "user-read-private",
+                "user-read-playback-state",
+                "user-modify-playback-state",
+                "user-read-currently-playing",
+                "user-follow-read",
+                "user-follow-modify",
+                "playlist-read-private",
+                "playlist-modify-public",
+                "playlist-modify-private",
+                "playlist-read-collaborative",
+                "app-remote-control",
+                "streaming"
+            ],
             showDialog: true
         }),
         function(req, res) {
