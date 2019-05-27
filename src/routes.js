@@ -1,5 +1,7 @@
 const routes = require('express').Router();
 
+const UserController = require('../src/app/controllers/userController');
+
 var APIRoutes = function(passport) {
 
     //Auth
@@ -17,6 +19,26 @@ var APIRoutes = function(passport) {
             // function will not be called.
         }
     );
+
+    routes.get(
+        '/user/me',
+        passport.authenticate('spotify', {
+            scope: [
+                'user-read-email',
+                'user-read-private'],
+            showDialog: true
+        }),
+        function(req, res) {
+            console.log(res)
+            // The request will be redirected to spotify for authentication, so this
+            // function will not be called.
+        }
+    );
+    routes.get(
+        '/user/me',
+        passport.authenticate('spotify', { failureRedirect: '/login' }),
+        UserController.topTracks
+    );
     routes.get(
         '/callback',
         passport.authenticate('spotify', { failureRedirect: '/login' }),
@@ -29,6 +51,8 @@ var APIRoutes = function(passport) {
         // res.render('login.html', { user: req.user });
         res.status(200).json({message: 'Login'})
     });
+
+
 
     routes.get('/',  function (req, res) {
         res.status(404).json({'message': 'Welcome'});
