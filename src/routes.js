@@ -35,11 +35,6 @@ var APIRoutes = function(passport) {
         }
     );
     routes.get(
-        '/user/me',
-        passport.authenticate('spotify', { failureRedirect: '/login' }),
-        UserController.topTracks
-    );
-    routes.get(
         '/callback',
         passport.authenticate('spotify', { failureRedirect: '/login' }),
         function(req, res) {
