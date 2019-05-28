@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     href: {
         type: String
     },
-    id: {
+    spotifyId: {
         type: String
     },
     product: {

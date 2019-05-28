@@ -14,13 +14,17 @@ function hookSpotifyStrategy(passport) {
             {
                 clientID: process.env.SPOTIFY_CLIENT_ID,
                 clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-                callbackURL: 'http://localhost:8888/auth/spotify/callback'
+                callbackURL: 'http://localhost:3000/v1/callback'
             },
             function(accessToken, refreshToken, expires_in, profile, done) {
                 console.log(profile)
-                // User.findOrCreate({ spotifyId: profile.id }, function(err, user) {
-                //     return done(err, user);
-                // });
+                console.log(accessToken)
+                console.log(refreshToken)
+                console.log(expires_in)
+                console.log(done)
+                User.findOrCreate({ spotifyId: profile.id }, function(err, user) {
+                    return done(err, user);
+                });
             }
         )
     );
