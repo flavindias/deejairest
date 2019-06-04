@@ -1,31 +1,42 @@
-const mongoose = require('../../database');
 
-const RoomSchema = new mongoose.Schema({
+const Sequelize = require('sequelize'),
+    db = require('../../services/database');
+
+const User = require('./User');
+const Track = require('./Track');
+
+var modelDefinition = {
+    id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
     code:{
-        type: String,
+        type: Sequelize.STRING,
         required: true
     },
-    owner: {
-        type: String,
+    owner_id: {
+        type: Sequelize.INTEGER,
         required: true
     },
-    members: {
-        type: [String],
+    location:Sequelize.GEOMETRY('POINT'),
+    public: {
+        type: Sequelize.BOOLEAN
     },
-    location:{
-        type: {
-            type: String, // Don't do `{ location: { type: String } }`
-            enum: ['Point'], // 'location.type' must be 'Point'
-            required: true
-        },
-        coordinates: {
-            type: [Number],
-            required: true
-        }
+    active: {
+        type: Sequelize.BOOLEAN
     },
-    songs: {
-        type: [String],
-    },
-})
+}
 
-module.exports = mongoose.model('Room', RoomSchema);
+var modelOptions = {
+
+}
+
+var Room = db.define('Room', modelDefinition, modelOptions);
+Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
+Room.belongsToMany(Track, {as: 'tracks', through: 'rooms_tracks', foreignKey: 'room_id', otherKey: 'track_id'});
+Room.belongsToMany(User, {as: 'members', through: 'rooms_users', foreignKey: 'room_id', otherKey: 'user_id'});
+module.exports = Room;
+

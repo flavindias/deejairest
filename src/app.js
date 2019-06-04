@@ -6,8 +6,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const express = require('express');
 const passport = require('passport');
-const hookJWTStrategy = require('./app/middleware/passportStrategy');
-const hookSpotifyStrategy = require('./app/middleware/passportSpotifyStrategy');
+const hookBearerStrategy = require('./app/middleware/passportBearerStrategy');
 
 class AppController {
     constructor(){
@@ -16,10 +15,8 @@ class AppController {
         this.express.use(bodyParser.urlencoded({ extended: false}));
         this.express.use(morgan('dev'));
         this.express.use(passport.initialize());
-        hookJWTStrategy(passport);
-        hookSpotifyStrategy(passport);
+        hookBearerStrategy(passport);
 
-        // this.express.use(express.static(__dirname + '../public'));
         this.routes();
         this.middlewares();
     }
@@ -82,7 +79,7 @@ class AppController {
 
 
         // Bundle API routes.
-        this.express.use('/v1', require('./routes')(passport));
+        this.express.use('/v1', require('./routes/api')(passport));
 
         // Pegando todas as rotas.
         this.express.get('*', function(req, res) {

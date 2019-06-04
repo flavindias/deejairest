@@ -1,43 +1,76 @@
-const mongoose = require('../../database');
+'use strict';
+const bcrypt = require('bcryptjs')
+const Sequelize = require('sequelize'),
+    db = require('../../services/database');
 
-const UserSchema = new mongoose.Schema({
+
+var modelDefinition = {
+    id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
     birthdate: {
-        type: Date
+        type:  Sequelize.DATE,
     },
     country: {
-        type: String
+        type:  Sequelize.STRING,
     },
     display_name: {
-        type: String
+        type:  Sequelize.STRING,
+
     },
     email: {
-        type: String
+        type:  Sequelize.STRING,
+        allowNull: false
     },
     href: {
-        type: String
+        type:  Sequelize.STRING,
     },
-    spotifyId: {
-        type: String
+    spotify_id: {
+        type:  Sequelize.STRING,
+        unique: true,
+        allowNull: false
     },
     product: {
-        type: String
+        type:  Sequelize.STRING,
     },
-    type: {
-        type: String
+    type:  {
+        type:  Sequelize.STRING,
     },
-    uri: {
-        type: String
+    hash_password: Sequelize.STRING,
+    reset_password_token: Sequelize.STRING,
+    reset_password_token_expires_in: Sequelize.DATE,
+    active: {
+        type: Sequelize.BOOLEAN
     },
-    dislikedSongs: {
-        type: [String],
-        index: true
-    },
-    createdAt: {
-        type: Date,
-        defaultValue: Date.now()
-    },
-});
+}
 
-const User  = mongoose.model('User', UserSchema);
+// 2: The model options.
+var modelOptions = {
+    // instanceMethods: {
+    //     // Compares two passwords.
+    //     comparePasswords: function (password, user, callback) {
+    //         bcrypt.compare(password, user.password, function(error, isMatch) {
+    //             if(error) {
+    //                 console.log(error);
+    //                 return callback(error);
+    //             }
+    //
+    //             return callback(null, isMatch);
+    //         });
+    //     }
+    // },
+    // hooks: {
+    //     beforeValidate: hashPassword
+    // },
+    // hierarchy: true
+
+};
+
+// 3: Definindo o model de Individual.
+var User = db.define('User', modelDefinition, modelOptions);
 
 module.exports = User;

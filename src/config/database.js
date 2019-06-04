@@ -42,16 +42,5 @@ config.db = {
     name: config.debug ? 'deejaidb' : process.env.AWS_RDS_DB_NAME
 };
 
-config.front = {
-    url: config.debug ? process.env.CLIENT_FRONT_URL_DEBUG : process.env.CLIENT_FRONT_URL_PROD,
-}
-
-
 config.db.details = config.debug ? localConfig : awsConfig;
 
-
-config.keys = {
-    crypto: process.env.DATABASE_CRYPTO,
-    secret: process.env.DATABASE_SECRET,
-
-};
