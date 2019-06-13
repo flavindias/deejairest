@@ -33,7 +33,9 @@ function hookBearerStrategy(passport) {
                                             href: resp.data.href,
                                             product: resp.data.product,
                                             type: resp.data.type,
+
                                         }
+                                        resp.data.images.length != 0 ? user['photo'] = resp.data.images[0].url : null
                                         User.create(user).then(
                                             user => {
                                                 if (!user) { return done(null, false); }

@@ -8,6 +8,7 @@ module.exports = {
         Parametro: nenhum
         Método http: GET
      */
+    //TODO return rooms that I was a member
     index: (req, res) => {
 
         // console.log(req.done)
@@ -46,6 +47,7 @@ module.exports = {
                         where:{
                             room_id: result.dataValues.id,
                             user_id: req.user.dataValues.id,
+                            active: true
                         },
                         defaults: {
                             room_id: result.dataValues.id,
@@ -83,10 +85,17 @@ module.exports = {
      */
     create: (req, res) => {
         let code = uuidv4()
-        Room.create({
+        var fields = {
             owner_id: req.user.dataValues.id,
             code: code
-        }).then(
+
+        }
+        if (req.body.latitude) {
+            fields['location'] = {
+                type: 'Point', coordinates: [req.body.latitude,req.body.longitude]
+            }
+        }
+        Room.create(fields).then(
             result => {
                 if (result){
                     res.status(201).json({
@@ -97,6 +106,7 @@ module.exports = {
             }
         )
     },
+    //TODO check if user are a member or owner
     view: (req, res) => {
         Room.findOne({
             where: {
@@ -107,11 +117,91 @@ module.exports = {
             }
         }).then( result => {
             if (result){
-                console.log(result)
                 res.send(result)
             }
         })
 
-    }
+    },
+    //    TODO remove a user from room
+    remove: (req, res) => {
+        req.params.user_id ? void(0) : res.status(404).json({message: "user_id is required."});
+        Room.findOne({
+            where: {
+                code: req.params.code
+            },
+            include: {
+                all: true
+            }
+        }).then( result => {
+            if (result){
+                if (req.user.dataValues.id == result.owner_id){
+                    RoomUser.destroy({
+                        where: {
+                            room_id: result.id,
+                            user_id: parseInt(req.params.user_id)
+                        }
+                    }).then( RUresult => {
+                        if (RUresult){
+                            res.status(204).json({
+                                message: "User has been removed."
+                            })
+                        }
+                        else{
+                            res.status(400).json({
+                                message: "User cannot be removed."
+                            })
+                        }
+                    })
 
+                }
+                else{
+                    res.status(403).json({
+                        message: "You are not the owner."
+                    })
+                }
+            }
+            else{
+                res.status(404).json({
+                    message: "Room not found."
+                })
+            }
+        })
+    },
+    //    TODO quit from room
+    quit: (req, res) => {
+        Room.findOne({
+            where: {
+                code: req.params.code
+            },
+            include: {
+                all: true
+            }
+        }).then( result => {
+            if (result){
+                RoomUser.destroy({
+                    where: {
+                        room_id: result.id,
+                        user_id: req.user.dataValues.id
+                    }
+                }).then( RUresult => {
+                    if (RUresult){
+                        res.status(204).json({
+                            message: "User has been quited."
+                        })
+                    }
+                    else{
+                        res.status(400).json({
+                            message: "User cannot be quited."
+                        })
+                    }
+                })
+
+            }
+            else{
+                res.status(404).json({
+                    message: "Room not found."
+                })
+            }
+        })
+    }
 }

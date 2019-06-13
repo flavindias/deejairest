@@ -40,6 +40,9 @@ var modelDefinition = {
     type:  {
         type:  Sequelize.STRING,
     },
+    photo:  {
+        type:  Sequelize.STRING,
+    },
     hash_password: Sequelize.STRING,
     reset_password_token: Sequelize.STRING,
     reset_password_token_expires_in: Sequelize.DATE,

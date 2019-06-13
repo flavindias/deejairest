@@ -28,6 +28,6 @@ var modelOptions = {
 
 }
 
-var RoomUser = db.define('RoomUser', modelDefinition, modelOptions);
+var RoomUser = db.define('rooms_users', modelDefinition, modelOptions);
 RoomUser.belongsTo(User, {as: 'member', foreignKey: 'user_id'});
 module.exports = RoomUser;

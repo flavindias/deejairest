@@ -83,9 +83,19 @@ var APIRoutes = function(passport) {
         roomController.join
     );
 
+    router.post('/rooms/:code/quit',
+        passport.authenticate('bearer', { session: false}),
+        roomController.quit
+    );
+
     router.get('/rooms/:code',
         passport.authenticate('bearer', { session: false}),
         roomController.view
+    );
+
+    router.delete('/rooms/:code/:user_id',
+        passport.authenticate('bearer', { session: false}),
+        roomController.remove
     );
 
 
