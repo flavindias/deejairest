@@ -10,6 +10,7 @@ var modelDefinition = {
         allowNull: false,
         unique: true,
         primaryKey: true,
+        autoIncrement: true
     },
     user_id:{
         type: Sequelize.INTEGER,
