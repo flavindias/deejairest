@@ -8,7 +8,7 @@ A music recommendation service based on artificial intelligence.
 * Node
 * NPM
 * Express
-* Mongoose
+* Sequelize (MySQL)
 
 ### Folder structure
 
