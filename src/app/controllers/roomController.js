@@ -1,6 +1,8 @@
 const uuidv4 = require('uuid/v4');
-const  Room = require('../models/Room');
-const  RoomUser = require('../models/RoomUser');
+const Room = require('../models/Room');
+const RoomUser = require('../models/RoomUser');
+const RoomTrack = require('../models/RoomTrack');
+const User = require('../models/User')
 
 module.exports = {
     /*
@@ -16,9 +18,16 @@ module.exports = {
             where: {
                 owner_id: req.user.dataValues.id
             },
-            include: {
-                all: true
-            }
+            include: [{
+                model: User,
+                as: 'owner'
+            },{
+                model: RoomTrack,
+                as: 'tracks'
+            },{
+                model: RoomUser,
+                as: 'members'
+            }]
         }).then(
             result => {
                 if (result){

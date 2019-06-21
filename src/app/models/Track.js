@@ -8,7 +8,7 @@ var modelDefinition = {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
-        primaryKey: true,
+        primaryKey: true
     },
     name:{
         type: Sequelize.STRING,

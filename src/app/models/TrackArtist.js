@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
-const Track = require('Track')
-const Artist = require('Artist')
+const Track = require('./Track')
+const Artist = require('./Artist')
 
 var modelDefinition = {
     id: {
