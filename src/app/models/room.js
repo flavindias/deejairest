@@ -4,6 +4,8 @@ const Sequelize = require('sequelize'),
 
 const User = require('./User');
 const Track = require('./Track');
+const RoomTrack = require('./RoomTrack');
+const RoomUser = require('./RoomUser');
 
 var modelDefinition = {
     id: {
@@ -36,6 +38,8 @@ var modelOptions = {
 
 var Room = db.define('Room', modelDefinition, modelOptions);
 Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
+// Room.hasMany(RoomTrack, {as: 'tracks', foreignKey: 'room_id'});
+// Room.hasMany(RoomUser, {as: 'members', foreignKey: 'room_id'});
 Room.belongsToMany(Track, {as: 'tracks', through: 'rooms_tracks', foreignKey: 'room_id', otherKey: 'track_id'});
 Room.belongsToMany(User, {as: 'members', through: 'rooms_users', foreignKey: 'room_id', otherKey: 'user_id'});
 module.exports = Room;

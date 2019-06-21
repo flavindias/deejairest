@@ -3,6 +3,8 @@
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
+const Artist = require('./Artist');
+
 var modelDefinition = {
     id: {
         type: Sequelize.STRING,
@@ -33,5 +35,6 @@ var modelOptions = {
 }
 
 var Track = db.define('Track', modelDefinition, modelOptions);
+Track.belongsToMany(Artist, {as: 'artists', through: 'tracks_artists', foreignKey: 'track_id', otherKey: 'artist_id'});
 
 module.exports = Track;

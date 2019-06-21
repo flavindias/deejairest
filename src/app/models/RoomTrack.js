@@ -29,7 +29,7 @@ var modelOptions = {
 
 }
 
-var RoomTrack = db.define('RoomTrack', modelDefinition, modelOptions);
-RoomTrack.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
-// RoomTrack.belongsTo(Room, {as: 'trac', foreignKey: 'room_id'});
+var RoomTrack = db.define('Rooms_Track', modelDefinition, modelOptions);
+// RoomTrack.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
+// RoomTrack.belongsTo(Room, {as: 'room', foreignKey: 'room_id'});
 module.exports = RoomTrack;

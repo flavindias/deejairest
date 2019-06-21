@@ -14,61 +14,50 @@ function hookBearerStrategy(passport) {
                             "Authorization" : `Bearer ${token}`
                         }
                     }
-                ).then((resp) => {
-                        if (resp){
-
-                            User.findOne({
-                                where:{
-                                    spotify_id: resp.data.id
-                                }
-                            }).then(
-                                res => {
-                                    if (!res){
-                                        var user = {
-                                            spotify_id: resp.data.id,
-                                            birthdate: resp.data.birthdate,
-                                            country: resp.data.country,
-                                            display_name: resp.data.display_name,
-                                            email: resp.data.email,
-                                            href: resp.data.href,
-                                            product: resp.data.product,
-                                            type: resp.data.type,
-
-                                        }
-                                        resp.data.images.length != 0 ? user['photo'] = resp.data.images[0].url : null
-                                        User.create(user).then(
-                                            user => {
-                                                if (!user) { return done(null, false); }
-                                                user.dataValues.token = token
-                                                return done(null, user, { scope: 'all' });
-                                            }
-                                        )
-                                    }
-                                    else{
-                                        res.dataValues.token = token
-                                        return done(null, res, { scope: 'all' });
-                                    }
-                                }
-                            )
+                )
+                if (response){
+                    User.findOne({
+                        where:{
+                            spotify_id: response.data.id
                         }
-                        else{
-                            // console.log(resp.response.config.response)
-                            done(resp.response);
+                    }).then(
+                        res => {
+                            if (!res){
+                                var user = {
+                                    spotify_id: response.data.id,
+                                    birthdate: response.data.birthdate,
+                                    country: response.data.country,
+                                    display_name: response.data.display_name,
+                                    email: response.data.email,
+                                    href: response.data.href,
+                                    product: response.data.product,
+                                    type: response.data.type,
+
+                                }
+                                response.data.images.length != 0 ? user['photo'] = response.data.images[0].url : null
+                                User.create(user).then(
+                                    user => {
+                                        if (!user) { return done(null, false); }
+                                        user.dataValues.token = token
+                                        return done(null, user, { scope: 'all' });
+                                    }
+                                )
+                            }
+                            else{
+                                res.dataValues.token = token
+                                return done(null, res, { scope: 'all' });
+                            }
                         }
+                    )
+                }
 
-
-
-
-                    },
-                    (error) => {
-                        console.log(error)
-                        if (error) { return done(error); }
-
-                    }
-                );
+                else{
+                    // console.log(response.responseonse.config.responseonse)
+                    done(response.response);
+                }
             }
             catch (e) {
-                console.log(e)
+                console.log(`catch ${e}`)
                 return done(e)
             }
 

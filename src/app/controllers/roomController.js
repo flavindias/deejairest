@@ -1,8 +1,10 @@
 const uuidv4 = require('uuid/v4');
 const Room = require('../models/Room');
 const RoomUser = require('../models/RoomUser');
-const RoomTrack = require('../models/RoomTrack');
-const User = require('../models/User')
+const Tracks = require('../models/Track');
+const User = require('../models/User');
+const Artist = require('../models/Artist');
+const Genre = require('../models/Genre');
 
 module.exports = {
     /*
@@ -22,10 +24,10 @@ module.exports = {
                 model: User,
                 as: 'owner'
             },{
-                model: RoomTrack,
+                model: Tracks,
                 as: 'tracks'
             },{
-                model: RoomUser,
+                model: User,
                 as: 'members'
             }]
         }).then(
@@ -121,9 +123,24 @@ module.exports = {
             where: {
                 code: req.params.code
             },
-            include: {
-                all: true
-            }
+            include: [{
+                model: User,
+                as: 'owner'
+            },{
+                model: Tracks,
+                as: 'tracks',
+                include:[{
+                    model: Artist,
+                    as: 'artists',
+                    include: [{
+                        model: Genre,
+                        as: 'genres'
+                    }]
+                }]
+            },{
+                model: User,
+                as: 'members'
+            }]
         }).then( result => {
             if (result){
                 res.send(result)
