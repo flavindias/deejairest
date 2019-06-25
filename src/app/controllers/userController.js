@@ -3,6 +3,8 @@ const Track = require('../models/Track');
 const UserTrack = require('../models/UserTracks');
 const Artist = require('../models/Artist');
 const TrackArtist = require('../models/TrackArtist');
+const ArtistGenre = require('../models/ArtistGenre');
+const Genre = require('../models/Genre');
 
 module.exports = {
     topSongs: async (req, res) => {
@@ -58,13 +60,52 @@ module.exports = {
                                                     createdAt: new Date(),
                                                     updatedAt: new Date()
                                                 }
-                                            }).then(result => {
-                                                // console.log(result)
-                                                console.log(artist.name)
+                                            }).then(async result => {
+
                                                 TrackArtist.create({
                                                     artist_id: artist.id,
                                                     track_id: track.dataValues.id
                                                 })
+                                                var resp = await axios.get(
+                                                    `https://api.spotify.com/v1/artists/${artist.id}`,
+                                                    {headers: {
+                                                            "Authorization" : `Bearer ${req.user.dataValues.token}`
+                                                        }
+                                                    }).then(resp => {
+                                                    if (resp){
+
+                                                        var response = resp.data
+                                                        response.genres.map(
+                                                            async genre => {
+                                                                var genreName = await Genre.findOne({
+                                                                    where: {
+                                                                        name: genre
+                                                                    }
+                                                                })
+                                                                if (genreName){
+                                                                    ArtistGenre.findOrCreate({
+                                                                        where:
+                                                                            {
+                                                                                artist_id: artist.id,
+                                                                                genre_id: genreName.id
+                                                                            },
+                                                                            defaults:
+                                                                                {
+                                                                                    artist_id: artist.id,
+                                                                                    genre_id: genreName.id,
+                                                                                    active: true,
+                                                                                    createdAt: new Date(),
+                                                                                    updatedAt: new Date()
+                                                                                }
+                                                                        }
+                                                                    )
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+
+                                                })
+
                                             })
 
 

@@ -1,8 +1,9 @@
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
-const Genre = require('Genre')
-const Artist = require('Artist')
+const Genre = require('./Genre')
+const Artist = require('./Artist')
+const Track = require('./Track')
 
 var modelDefinition = {
     id: {
@@ -21,7 +22,8 @@ var modelDefinition = {
         required: true
     },
     active: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
     },
 }
 
@@ -30,7 +32,7 @@ var modelOptions = {
 
 }
 
-var ArtistGenre = db.define('ArtistGenre', modelDefinition, modelOptions);
-ArtistGenre.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
+var ArtistGenre = db.define('artists_genres', modelDefinition, modelOptions);
+// ArtistGenre.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
 // RoomTrack.belongsTo(Room, {as: 'trac', foreignKey: 'room_id'});
 module.exports = ArtistGenre;
