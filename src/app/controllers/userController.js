@@ -1,6 +1,8 @@
 const axios = require('axios');
 const Track = require('../models/Track');
 const UserTrack = require('../models/UserTracks');
+const Artist = require('../models/Artist');
+const TrackArtist = require('../models/TrackArtist');
 
 module.exports = {
     topSongs: async (req, res) => {
@@ -28,20 +30,50 @@ module.exports = {
                                     updatedAt: new Date()
                                 }
                             }).then(
-                                ([track, created]) => {
-                                    console.log(track.dataValues.id)
-                                    UserTrack.findOrCreate({
-                                        where: {
-                                            user_id: req.user.dataValues.id,
-                                            track_id: track.dataValues.id
-                                        },
-                                        defaults: {
-                                            user_id: req.user.dataValues.id,
-                                            track_id: track.dataValues.id,
-                                            createdAt: new Date(),
-                                            updatedAt: new Date()
-                                        }
-                                    })
+                                async ([track, created]) => {
+                                    try{
+                                        UserTrack.findOrCreate({
+                                            where: {
+                                                user_id: req.user.dataValues.id,
+                                                track_id: track.dataValues.id
+                                            },
+                                            defaults: {
+                                                user_id: req.user.dataValues.id,
+                                                track_id: track.dataValues.id,
+                                                createdAt: new Date(),
+                                                updatedAt: new Date()
+                                            }
+                                        })
+                                        await music.artists.map(async artist => {
+
+                                            await Artist.findOrCreate({
+                                                where: {
+                                                    id: artist.id
+                                                },
+                                                defaults: {
+                                                    id: artist.id,
+                                                    name: artist.name,
+                                                    href: artist.href,
+                                                    uri: artist.uri,
+                                                    createdAt: new Date(),
+                                                    updatedAt: new Date()
+                                                }
+                                            }).then(result => {
+                                                // console.log(result)
+                                                console.log(artist.name)
+                                                TrackArtist.create({
+                                                    artist_id: artist.id,
+                                                    track_id: track.dataValues.id
+                                                })
+                                            })
+
+
+                                        })
+                                    }
+                                    catch (e) {
+                                        console.log(e)
+                                    }
+
 
                                 }
                             )

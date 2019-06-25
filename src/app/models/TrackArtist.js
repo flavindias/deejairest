@@ -10,6 +10,7 @@ var modelDefinition = {
         allowNull: false,
         unique: true,
         primaryKey: true,
+        autoIncrement: true
     },
     track_id:{
         type: Sequelize.STRING,
@@ -29,7 +30,7 @@ var modelOptions = {
 
 }
 
-var TrackArtist = db.define('TrackArtist', modelDefinition, modelOptions);
-TrackArtist.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
+var TrackArtist = db.define('tracks_artists', modelDefinition, modelOptions);
+// TrackArtist.hasOne(Track, {as: 'track', foreignKey: 'track_id'});
 // RoomTrack.belongsTo(Room, {as: 'trac', foreignKey: 'room_id'});
 module.exports = TrackArtist;
