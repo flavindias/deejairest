@@ -28,6 +28,7 @@ module.exports = {
                                     name: music.name,
                                     duration: music.duration_ms,
                                     popularity: music.popularity,
+                                    isrc: music.external_ids.isrc,
                                     createdAt: new Date(),
                                     updatedAt: new Date()
                                 }

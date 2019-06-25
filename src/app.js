@@ -6,11 +6,14 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const express = require('express');
 const passport = require('passport');
+const cors = require('cors');
+
 const hookBearerStrategy = require('./app/middleware/passportBearerStrategy');
 
 class AppController {
     constructor(){
         this.express = express();
+        this.express.use(cors());
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false}));
         this.express.use(morgan('dev'));

@@ -24,6 +24,10 @@ var modelDefinition = {
         type: Sequelize.INTEGER,
         required: true
     },
+    isrc: {
+        type: Sequelize.STRING,
+        unique: true,
+    },
     active: {
         type: Sequelize.BOOLEAN
     },
