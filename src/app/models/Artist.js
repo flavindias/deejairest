@@ -35,7 +35,7 @@ var modelOptions = {
 
 }
 
-var Artist = db.define('Artist', modelDefinition, modelOptions);
+var Artist = db.define('artist', modelDefinition, modelOptions);
 Artist.belongsToMany(Genre, {as: 'genres', through: 'artists_genres', foreignKey: 'artist_id', otherKey: 'genre_id'});
 // Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
 // Room.belongsToMany(Track, {as: 'tracks', through: 'rooms_tracks', foreignKey: 'room_id', otherKey: 'track_id'});
