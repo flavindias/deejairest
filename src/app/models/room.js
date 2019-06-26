@@ -36,7 +36,7 @@ var modelOptions = {
 
 }
 
-var Room = db.define('Room', modelDefinition, modelOptions);
+var Room = db.define('room', modelDefinition, modelOptions);
 Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
 // Room.hasMany(RoomTrack, {as: 'tracks', foreignKey: 'room_id'});
 // Room.hasMany(RoomUser, {as: 'members', foreignKey: 'room_id'});

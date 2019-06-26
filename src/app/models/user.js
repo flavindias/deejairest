@@ -74,6 +74,6 @@ var modelOptions = {
 };
 
 // 3: Definindo o model de Individual.
-var User = db.define('User', modelDefinition, modelOptions);
+var User = db.define('user', modelDefinition, modelOptions);
 
 module.exports = User;

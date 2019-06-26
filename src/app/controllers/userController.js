@@ -63,10 +63,21 @@ module.exports = {
                                                 }
                                             }).then(async result => {
 
-                                                TrackArtist.create({
-                                                    artist_id: artist.id,
-                                                    track_id: track.dataValues.id
-                                                })
+                                                TrackArtist.findOrCreate(
+                                                    {
+                                                        where: {
+                                                            artist_id: artist.id,
+                                                            track_id: track.dataValues.id
+                                                        },
+                                                        defaults:{
+                                                            artist_id: artist.id,
+                                                            track_id: track.dataValues.id,
+                                                            createdAt: new Date(),
+                                                            updatedAt: new Date()
+
+                                                        }
+                                                    }
+                                                )
                                                 var resp = await axios.get(
                                                     `https://api.spotify.com/v1/artists/${artist.id}`,
                                                     {headers: {
