@@ -2,8 +2,10 @@
 var router = require('express').Router();
 
 const config = require('../config/config');
-const  userController  = require('../../src/app/controllers/userController');
-const  roomController  = require('../../src/app/controllers/roomController');
+const userController = require('../../src/app/controllers/userController');
+const roomController = require('../../src/app/controllers/roomController');
+const playlistController = require('../../src/app/controllers/playlistController');
+
 const scope = [
     "user-read-recently-played",
     "user-top-read",
@@ -69,53 +71,65 @@ var APIRoutes = function(passport) {
         Room methods
      */
     router.get('/rooms',
-        passport.authenticate('bearer', {session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.index
     );
 
     router.post('/rooms',
-        passport.authenticate('bearer', { session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.create
     );
 
     router.post('/rooms/:code',
-        passport.authenticate('bearer', { session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.join
     );
 
     router.post('/rooms/:code/quit',
-        passport.authenticate('bearer', { session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.quit
     );
 
     router.get('/rooms/:code',
-        passport.authenticate('bearer', { session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.view
     );
 
     router.delete('/rooms/:code/:user_id',
-        passport.authenticate('bearer', { session: false}),
+        passport.authenticate('bearer', { session: false }),
         roomController.remove
     );
 
+    /*
+        Playlist methods
+    */
 
+    router.post('/playlists/:idPlaylist/vote',
+        passport.authenticate('bearer', { session: false }),
+        playlistController.vote
+    );
+
+    router.post('/playlists/:idPlaylist/sync',
+        passport.authenticate('bearer', { session: false }),
+        playlistController.sync
+    );
 
     //Redirect to home
 
-    router.get('/',  function (req, res) {
-        res.status(404).json({'message': 'Welcome'});
+    router.get('/', function(req, res) {
+        res.status(404).json({ 'message': 'Welcome' });
     });
-    router.get('/*',  function (req, res) {
-        res.status(404).json({'message': 'URI is not valid.'});
+    router.get('/*', function(req, res) {
+        res.status(404).json({ 'message': 'URI is not valid.' });
     });
-    router.post('/*',  function (req, res) {
-        res.status(404).json({'message': 'URI is not valid.'});
+    router.post('/*', function(req, res) {
+        res.status(404).json({ 'message': 'URI is not valid.' });
     });
-    router.put('/*',  function (req, res) {
-        res.status(404).json({'message': 'URI is not valid.'});
+    router.put('/*', function(req, res) {
+        res.status(404).json({ 'message': 'URI is not valid.' });
     });
-    router.delete('/*',  function (req, res) {
-        res.status(404).json({'message': 'URI is not valid.'});
+    router.delete('/*', function(req, res) {
+        res.status(404).json({ 'message': 'URI is not valid.' });
     });
 
 
