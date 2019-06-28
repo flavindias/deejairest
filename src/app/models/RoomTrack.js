@@ -1,3 +1,4 @@
+'use strict';
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -11,7 +12,7 @@ var modelDefinition = {
         unique: true,
         primaryKey: true,
     },
-    track_id:{
+    track_id: {
         type: Sequelize.STRING,
         required: true
     },

@@ -1,5 +1,5 @@
 'use strict';
-const bcrypt = require('bcryptjs')
+
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -13,35 +13,35 @@ var modelDefinition = {
         autoIncrement: true
     },
     birthdate: {
-        type:  Sequelize.DATE,
+        type: Sequelize.DATE,
     },
     country: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
     },
     display_name: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
 
     },
     email: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
         allowNull: false
     },
     href: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
     },
     spotify_id: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false
     },
     product: {
-        type:  Sequelize.STRING,
+        type: Sequelize.STRING,
     },
-    type:  {
-        type:  Sequelize.STRING,
+    type: {
+        type: Sequelize.STRING,
     },
-    photo:  {
-        type:  Sequelize.STRING,
+    photo: {
+        type: Sequelize.STRING,
     },
     hash_password: Sequelize.STRING,
     reset_password_token: Sequelize.STRING,

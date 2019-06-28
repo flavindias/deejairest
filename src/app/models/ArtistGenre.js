@@ -1,3 +1,4 @@
+'use strict';
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -13,7 +14,7 @@ var modelDefinition = {
         primaryKey: true,
         autoIncrement: true
     },
-    genre_id:{
+    genre_id: {
         type: Sequelize.INTEGER,
         required: true
     },

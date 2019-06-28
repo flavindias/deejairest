@@ -1,3 +1,4 @@
+'use strict';
 const Sequelize = require('sequelize'),
   db = require('../../services/database');
 

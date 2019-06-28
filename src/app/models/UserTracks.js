@@ -1,5 +1,5 @@
 'use strict';
-const bcrypt = require('bcryptjs')
+
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -14,7 +14,7 @@ var modelDefinition = {
         primaryKey: true,
         autoIncrement: true
     },
-    user_id:{
+    user_id: {
         type: Sequelize.INTEGER,
         required: true
     },
@@ -32,6 +32,6 @@ var modelOptions = {
 
 }
 
-var UserTrack = db.define('Users_Track', modelDefinition, modelOptions);
+var UserTrack = db.define('users_track', modelDefinition, modelOptions);
 
 module.exports = UserTrack;

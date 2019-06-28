@@ -1,3 +1,4 @@
+'use strict';
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -12,7 +13,7 @@ var modelDefinition = {
         primaryKey: true,
         autoIncrement: true
     },
-    user_id:{
+    user_id: {
         type: Sequelize.INTEGER,
         required: true
     },
@@ -30,5 +31,5 @@ var modelOptions = {
 }
 
 var RoomUser = db.define('rooms_users', modelDefinition, modelOptions);
-RoomUser.belongsTo(User, {as: 'member', foreignKey: 'user_id'});
+RoomUser.belongsTo(User, { as: 'member', foreignKey: 'user_id' });
 module.exports = RoomUser;

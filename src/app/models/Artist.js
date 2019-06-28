@@ -1,4 +1,4 @@
-
+'use strict';
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -12,17 +12,17 @@ var modelDefinition = {
         unique: true,
         primaryKey: true
     },
-    name:{
+    name: {
         type: Sequelize.STRING,
         required: true
     },
-    uri:{
+    uri: {
         type: Sequelize.STRING,
     },
-    href:{
+    href: {
         type: Sequelize.STRING,
     },
-    image:{
+    image: {
         type: Sequelize.STRING,
         required: true
     },
@@ -36,7 +36,7 @@ var modelOptions = {
 }
 
 var Artist = db.define('artist', modelDefinition, modelOptions);
-Artist.belongsToMany(Genre, {as: 'genres', through: 'artists_genres', foreignKey: 'artist_id', otherKey: 'genre_id'});
+Artist.belongsToMany(Genre, { as: 'genres', through: 'artists_genres', foreignKey: 'artist_id', otherKey: 'genre_id' });
 // Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
 // Room.belongsToMany(Track, {as: 'tracks', through: 'rooms_tracks', foreignKey: 'room_id', otherKey: 'track_id'});
 // Room.belongsToMany(User, {as: 'members', through: 'rooms_users', foreignKey: 'room_id', otherKey: 'user_id'});

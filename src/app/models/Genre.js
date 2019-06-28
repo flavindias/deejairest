@@ -1,4 +1,4 @@
-
+'use strict';
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
 
@@ -13,11 +13,11 @@ var modelDefinition = {
         primaryKey: true,
         autoIncrement: true
     },
-    name:{
+    name: {
         type: Sequelize.STRING,
         required: true
     },
-    location:Sequelize.GEOMETRY('POINT'),
+    location: Sequelize.GEOMETRY('POINT'),
     active: {
         type: Sequelize.BOOLEAN
     },
