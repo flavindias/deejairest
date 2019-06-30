@@ -147,35 +147,57 @@ module.exports = {
         }).then(async resUsr => {
           if (resUsr) {
             resUsr.map(async track => {
-              usersTracks.append(track.dataValues.track_id)
-
+              usersTracks.push(track.dataValues.track_id);
             });
             if (!usersTracks.includes(req.body.track_id)) {
-              await Vote.findOrCreate({
+              await PlaylistTrack.findOne({
                 where: {
                   track_id: req.body.track_id,
-                  user_id: req.user.dataValues.id
-                },
-                defaults: {
-                  track_id: req.body.track_id,
-                  user_id: req.user.dataValues.id,
-                  active: true,
-                  createdAt: new Date(),
-                  updatedAt: new Date()
+                  playlist_id: parseInt(req.params.id)
                 }
-              }).then(([ vote, created ]) => {
-                if (vote) {
-                  if (created) {
-                    res.status(201).json({
-                      message: 'Vote has been registred.'
-                    });
-                  }
-                  else {
-                    res.status(200).json({
-                      message: 'Vote has been updated'
-                    });
-                  }
+              }).then(async resPT => {
+                if (resPT) {
+                  Vote.findOrCreate({
+                    where: {
+                      playlist_track_id: resPT.dataValues.id,
+                      user_id: req.user.dataValues.id
+                    },
+                    defaults: {
+                      playlist_track_id: resPT.dataValues.id,
+                      user_id: req.user.dataValues.id,
+                      rating: req.body.rating,
+                      active: true,
+                      createdAt: new Date(),
+                      updatedAt: new Date()
+                    }
+                  }).then(([ vote, created ]) => {
+                    if (vote) {
+                      if (created) {
+                        res.status(201).json({
+                          message: 'Vote has been registred.'
+                        });
+                      }
+                      else {
+                        vote.rating = req.body.rating
+                        vote.save()
+                        res.status(200).json({
+                          message: 'Vote has been updated'
+                        });
+                      }
+                    }
+                  })
                 }
+                else {
+                  res.status(403).json({
+                    message: "You can't vote in this playlist."
+                  })
+                }
+              })
+
+            }
+            else {
+              res.status(403).json({
+                message: "You can't vote in your music."
               })
             }
             res.status(201);
