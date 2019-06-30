@@ -104,12 +104,12 @@ var APIRoutes = function(passport) {
         Playlist methods
     */
 
-    router.post('/playlists/:idPlaylist/vote',
+    router.post('/playlists/:id/vote',
         passport.authenticate('bearer', { session: false }),
         playlistController.vote
     );
 
-    router.post('/playlists/:idPlaylist/sync',
+    router.post('/playlists/:id/sync',
         passport.authenticate('bearer', { session: false }),
         playlistController.sync
     );
@@ -117,7 +117,7 @@ var APIRoutes = function(passport) {
     //Redirect to home
 
     router.get('/', function(req, res) {
-        res.status(404).json({ 'message': 'Welcome' });
+        res.status(418).json({ 'message': 'Welcome' });
     });
     router.get('/*', function(req, res) {
         res.status(404).json({ 'message': 'URI is not valid.' });

@@ -21,6 +21,9 @@ var modelDefinition = {
     type: Sequelize.STRING,
     required: true
   },
+  user_id: {
+    type: Sequelize.INTEGER
+  },
   active: {
     type: Sequelize.BOOLEAN
   },

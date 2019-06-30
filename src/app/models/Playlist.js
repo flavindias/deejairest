@@ -17,7 +17,7 @@ var modelDefinition = {
     type: Sequelize.INTEGER,
     required: true
   },
-  approack: {
+  approach: {
     type: Sequelize.ENUM('IA', 'USER'),
     required: true
   },
