@@ -4,6 +4,9 @@ const Playlist = require('../models/Playlist');
 const PlaylistTrack = require('../models/PlaylistTrack');
 const Vote = require('../models/Vote');
 const UserTrack = require('../models/UserTracks');
+const Track = require('../models/Track');
+const Artist = require('../models/Artist');
+const Genre = require('../models/Genre');
 const Op = require('sequelize').Op;
 
 module.exports = {
@@ -85,7 +88,6 @@ module.exports = {
           message: "You can't do that."
         })
       }
-
     }
     catch (e) {
       res.status(500)
@@ -193,7 +195,6 @@ module.exports = {
                   })
                 }
               })
-
             }
             else {
               res.status(403).json({
@@ -203,18 +204,77 @@ module.exports = {
             res.status(201);
           }
         });
-
       }
       else {
         res.status(403).json({
           message: "You can't do that."
         })
       }
-
     }
     catch (e) {
       res.status(500)
     }
-
+  },
+  /*
+    Método para retornar todos ss
+  */
+  songs: async (req, res) => {
+    try {
+      // Checar se a playlist pertence a sala
+      Playlist.findOne({
+        where: {
+          id: parseInt(req.params.id)
+        },
+        include: [ {
+          model: Track,
+          as: 'tracks',
+          include: [ {
+            model: Artist,
+            as: 'artists',
+            include: [ {
+              model: Genre,
+              as: 'genres'
+            } ]
+          } ]
+        } ]
+      }).then(
+        async resp => {
+          if (resp) {
+            console.log(resp);
+            // Checar se o usuário pertece a sala
+            Room.findOne({
+              where: {
+                id: resp.dataValues.room_id,
+                owner_id: req.user.dataValues.id
+              }
+            }).then(respRoom => {
+              if (respRoom.lenght !== 0) {
+                res.status(200).json(resp.dataValues.tracks);
+              }
+              else {
+                RoomUser.findOne({
+                  where: {
+                    user_id: req.user.dataValues.id,
+                    room_id: resp.dataValues.room_id
+                  }
+                }).then(respRU => {
+                  if (respRU) {
+                    res.status(200).json(resp.dataValues.tracks);
+                  }
+                });
+              }
+            });
+          }
+          else {
+            res.status(404).json({
+              message: 'Playlist not found'
+            })
+          }
+        }
+      )
+    }
+    catch (e) {
+      res.status(500)
+    }
   }
 }
