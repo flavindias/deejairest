@@ -3,7 +3,7 @@ const Sequelize = require('sequelize'),
   db = require('../../services/database');
 
 const Track = require('./Track');
-const User = require('./User');
+const Playlist = require('./Playlist');
 
 var modelDefinition = {
   id: {
@@ -35,5 +35,7 @@ var modelOptions = {
 }
 
 var PlaylistTrack = db.define('playlists_track', modelDefinition, modelOptions);
+// PlaylistTrack.belongsTo(Playlist, { as: 'playlist', foreignKey: 'playlist_id' });
+// PlaylistTrack.hasOne(Track, { as: 'track', foreignKey: 'track_id' });
 
 module.exports = PlaylistTrack;
