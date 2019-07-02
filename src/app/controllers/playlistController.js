@@ -396,18 +396,6 @@ module.exports = {
               usersTracks.push(track.dataValues.track_id);
             });
 
-            // await PlaylistTrack.findOne({
-            //   where: {
-            //     track_id: {
-            //       [ Op.notIn ]: usersTracks
-            //     },
-            //     playlist_id: parseInt(req.params.id)
-            //   },
-            //   include: [ {
-            //     model: Track,
-            //     as: 'track'
-            //   } ]
-            // })
             Playlist.findAll({
               where: {
                 id: parseInt(req.params.id)
@@ -423,10 +411,13 @@ module.exports = {
               } ]
             }).then(async resPT => {
               if (resPT) {
-                let tracks = resPT.map(item => {
-                  return item.tracks;
+                const result = []
+                await resPT.map(item => {
+                  console.log(item.tracks);
+                  // result.concat(item.tracks);
+                  result.push(...item.tracks);
                 });
-                res.status(200).json(tracks);
+                res.status(200).json(result);
               }
               else {
                 res.status(403).json({
