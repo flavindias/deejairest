@@ -20,6 +20,12 @@ var modelDefinition = {
         type: Sequelize.STRING,
         required: true
     },
+    description: {
+        type: Sequelize.STRING
+    },
+    banner: {
+        type: Sequelize.STRING
+    },
     owner_id: {
         type: Sequelize.INTEGER,
         required: true

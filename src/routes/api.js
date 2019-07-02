@@ -109,6 +109,15 @@ var APIRoutes = function(passport) {
         playlistController.songs
     );
 
+    router.get('/playlists/:id/availableTracks',
+        passport.authenticate('bearer', { session: false }),
+        playlistController.availableTracks
+    );
+    router.post('/playlists',
+        passport.authenticate('bearer', { session: false }),
+        playlistController.add
+    );
+
     router.post('/playlists/:id/vote',
         passport.authenticate('bearer', { session: false }),
         playlistController.vote
@@ -118,6 +127,8 @@ var APIRoutes = function(passport) {
         passport.authenticate('bearer', { session: false }),
         playlistController.sync
     );
+
+
 
     //Redirect to home
 

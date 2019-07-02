@@ -1,9 +1,9 @@
 'use strict';
 const axios = require('axios');
 const BearerStrategy = require('passport-http-bearer').Strategy;
-const User  = require('../models/User');
+const User = require('../models/User');
 
-function hookBearerStrategy(passport) {
+function hookBearerStrategy (passport) {
     passport.use(new BearerStrategy(
         async function(token, done) {
             try {
@@ -11,18 +11,18 @@ function hookBearerStrategy(passport) {
                     "https://api.spotify.com/v1/me",
                     {
                         headers: {
-                            "Authorization" : `Bearer ${token}`
+                            "Authorization": `Bearer ${token}`
                         }
                     }
                 )
-                if (response){
+                if (response) {
                     User.findOne({
-                        where:{
+                        where: {
                             spotify_id: response.data.id
                         }
                     }).then(
                         res => {
-                            if (!res){
+                            if (!res) {
                                 var user = {
                                     spotify_id: response.data.id,
                                     birthdate: response.data.birthdate,
@@ -32,9 +32,8 @@ function hookBearerStrategy(passport) {
                                     href: response.data.href,
                                     product: response.data.product,
                                     type: response.data.type,
-
                                 }
-                                response.data.images.length != 0 ? user['photo'] = response.data.images[0].url : null
+                                response.data.images.length != 0 ? user[ 'photo' ] = response.data.images[ 0 ].url : null
                                 User.create(user).then(
                                     user => {
                                         if (!user) { return done(null, false); }
@@ -43,15 +42,14 @@ function hookBearerStrategy(passport) {
                                     }
                                 )
                             }
-                            else{
+                            else {
                                 res.dataValues.token = token
                                 return done(null, res, { scope: 'all' });
                             }
                         }
                     )
                 }
-
-                else{
+                else {
                     // console.log(response.responseonse.config.responseonse)
                     done(response.response);
                 }

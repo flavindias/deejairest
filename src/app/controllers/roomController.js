@@ -112,6 +112,9 @@ module.exports = {
                 type: 'Point', coordinates: [ req.body.latitude, req.body.longitude ]
             }
         }
+        if (req.body.description) {
+            fields[ 'description' ] = req.body.description
+        }
         Room.create(fields).then(
             result => {
                 if (result) {
