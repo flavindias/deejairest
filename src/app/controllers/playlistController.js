@@ -336,6 +336,9 @@ module.exports = {
       res.status(500)
     }
   },
+  /*
+    Método para retornar as faixas disponíveis para aquele usuário naquela playlist para voto
+  */
   // Refatorar
   availableTracks: async (req, res) => {
     try {
