@@ -277,6 +277,9 @@ module.exports = {
       res.status(500)
     }
   },
+  /*
+    Método para criar uma nova playlist
+  */
   add: async (req, res) => {
     try {
       let allowUser = false;
