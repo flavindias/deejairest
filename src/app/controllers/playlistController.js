@@ -524,7 +524,16 @@ module.exports = {
                   track.dataValues.votes = votes;
                   resultPLT.push(track);
                 });
-                res.send(resultPLT);
+                // ordenando pela média de votos
+                const sort = resultPLT.sort((a, b) => {
+                  return ((b.dataValues.votes.reduce((sum, vote) => {
+                    return sum + vote.rating;
+                  }, 0) / b.dataValues.votes.length) -
+                    (a.dataValues.votes.reduce((sum, vote) => {
+                      return sum + vote.rating;
+                    }, 0) / b.dataValues.votes.length))
+                })
+                res.send(sort);
               }
               else {
                 res.status(404).json({
@@ -532,37 +541,6 @@ module.exports = {
                 })
               }
             });
-
-            // Playlist.findAll({
-            //   where: {
-            //     id: parseInt(req.params.id)
-            //   },
-            //   include: [ {
-            //     model: Track,
-            //     as: 'tracks',
-            //     include: [ {
-            //       all: true
-            //     } ],
-            //     where: {
-            //       id: {
-            //         [ Op.notIn ]: usersTracks
-            //       }
-            //     }
-            //   } ]
-            // }).then(async resPT => {
-            //   if (resPT) {
-            //     const result = []
-            //     await resPT.map(item => {
-            //       result.push(...item.tracks);
-            //     });
-            //     res.status(200).json(resPT);
-            //   }
-            //   else {
-            //     res.status(403).json({
-            //       message: "You can't vote in this playlist."
-            //     })
-            //   }
-            // })
           }
         });
       }
