@@ -30,6 +30,7 @@ class AppController {
         this.express.use(helmet());
         this.express.disable('x-powered-by');
         this.express.set('trust proxy', 1) // trust first proxy
+
     }
 
     routes () {

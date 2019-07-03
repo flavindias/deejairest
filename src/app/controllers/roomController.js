@@ -7,6 +7,8 @@ const Track = require('../models/Track');
 const User = require('../models/User');
 const Artist = require('../models/Artist');
 const Genre = require('../models/Genre');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = {
     /*
@@ -14,13 +16,31 @@ module.exports = {
         Parametro: nenhum
         Método http: GET
      */
-    //TODO return rooms that I was a member
-    index: (req, res) => {
+    index: async (req, res) => {
+
+        let memberRooms = []
+        await RoomUser.findAll({
+            where: {
+                user_id: req.user.dataValues.id,
+
+            }
+        }).then(respRU => {
+            if (respRU) {
+                respRU.map(room => {
+                    memberRooms.push(room.dataValues.id);
+                });
+            }
+        });
 
         // console.log(req.done)
-        Room.findAll({
+        await Room.findAll({
             where: {
-                owner_id: req.user.dataValues.id
+                [ Op.or ]: {
+                    owner_id: req.user.dataValues.id,
+                    id: {
+                        [ Op.in ]: memberRooms
+                    }
+                }
             },
             include: [ {
                 model: User,
@@ -74,6 +94,15 @@ module.exports = {
                         }
                     }).then(([ reslt, created ]) => {
                         if (created) {
+                            req.io
+                                .of('/rooms')
+                                .on('connection', (socket) => {
+                                    chat.emit('joined', {
+                                        everyone: 'in'
+                                        , '/rooms': req.params.code,
+                                        message: `${req.user.display_name} joined at room #${result.dataValues.id}`
+                                    });
+                                });
                             res.status(201).json({
                                 message: "You successfully joined to the room."
                             })
@@ -152,27 +181,55 @@ module.exports = {
                     } ]
                 } ]
             },
-            // {
-            //     model: Playlist,
-            //     as: 'playlists',
-            //     include: [ {
-            //         all: true
-            //     } ]
-            //     // include: [ {
-            //     //     model: Artist,
-            //     //     as: 'artists',
-            //     //     include: [ {
-            //     //         model: Genre,
-            //     //         as: 'genres'
-            //     //     } ]
-            //     // } ]
-            // },
             {
                 model: User,
                 as: 'members'
             } ]
         }).then(result => {
             if (result) {
+                res.send(result)
+            }
+        })
+
+    },
+    simpleView: (req, res) => {
+        Room.findOne({
+            where: {
+                code: req.params.code
+            },
+            attributes: {
+                exclude: [ 'id' ]
+            },
+            include: [ {
+                model: User,
+                as: 'owner',
+                attributes: {
+                    exclude: [
+                        'hash_password',
+                        'spotify_id',
+                        'product',
+                        'type',
+                        'reset_password_token',
+                        'reset_password_token_created_at',
+                        'reset_password_token_expires_in',
+                        'birthdate',
+                        'country',
+                        'email',
+                        'href',
+                        'id',
+                        'active'
+                    ]
+                }
+            },
+            {
+                model: User,
+                as: 'members'
+            } ]
+        }).then(result => {
+            if (result) {
+                result.dataValues.membersCount = result.dataValues.members.lenght
+                delete (result.dataValues.members)
+                delete (result.dataValues.owner_id)
                 res.send(result)
             }
         })

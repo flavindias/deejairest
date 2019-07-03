@@ -37,7 +37,7 @@ function hookBearerStrategy (passport) {
                                 User.create(user).then(
                                     user => {
                                         if (!user) { return done(null, false); }
-                                        user.dataValues.token = token
+                                        user.dataValues.token = token;
                                         return done(null, user, { scope: 'all' });
                                     }
                                 )
