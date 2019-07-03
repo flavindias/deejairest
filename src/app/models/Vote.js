@@ -2,9 +2,6 @@
 const Sequelize = require('sequelize'),
   db = require('../../services/database');
 
-const PlaylistTrack = require('./PlaylistTrack');
-const User = require('./User');
-
 var modelDefinition = {
   id: {
     type: Sequelize.INTEGER,
@@ -35,6 +32,6 @@ var modelOptions = {
 
 }
 
-var UserTrack = db.define('vote', modelDefinition, modelOptions);
+var Vote = db.define('vote', modelDefinition, modelOptions);
 
-module.exports = UserTrack;
+module.exports = Vote;

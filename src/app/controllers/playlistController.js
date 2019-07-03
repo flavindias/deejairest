@@ -339,7 +339,6 @@ module.exports = {
   /*
     Método para retornar as faixas disponíveis para aquele usuário naquela playlist para voto
   */
-  // Refatorar
   availableTracks: async (req, res) => {
     try {
       let allowUser = false;
@@ -413,8 +412,6 @@ module.exports = {
               if (resPT) {
                 const result = []
                 await resPT.map(item => {
-                  console.log(item.tracks);
-                  // result.concat(item.tracks);
                   result.push(...item.tracks);
                 });
                 res.status(200).json(result);
@@ -439,5 +436,140 @@ module.exports = {
       res.status(500).json(e);
     }
 
+  },
+  /*
+    Método para retornar as faixas que já foram votadas
+  */
+  finalTracks: async (req, res) => {
+    try {
+      let allowUser = false;
+      // Checar se a playlist pertence a sala
+      await Playlist.findOne({
+        where: {
+          id: parseInt(req.params.id)
+        }
+      }).then(
+        async resp => {
+          if (resp) {
+            // Checar se o usuário pertece a sala
+            await Room.findOne({
+              where: {
+                id: resp.dataValues.room_id,
+                owner_id: req.user.dataValues.id
+              }
+            }).then(res => {
+              if (res.lenght !== 0) {
+                allowUser = true
+              }
+              else {
+                RoomUser.findOne({
+                  where: {
+                    user_id: req.user.dataValues.id,
+                    room_id: resp.dataValues.room_id
+                  }
+                }).then(respRU => {
+                  if (respRU) {
+                    allowUser = true
+                  }
+                });
+              }
+            });
+          }
+          else {
+            res.status(404).json({
+              message: 'Playlist not found'
+            })
+          }
+        }
+      )
+
+      if (allowUser) {
+        // Checar se a música pertence a playlist
+        let usersTracks = []
+        await UserTrack.findAll({
+          where: {
+            user_id: req.user.dataValues.id
+          }
+        }).then(async resUsr => {
+          if (resUsr) {
+            resUsr.map(async track => {
+              usersTracks.push(track.dataValues.track_id);
+            });
+
+            PlaylistTrack.findAll({
+              where: {
+                playlist_id: parseInt(req.params.id),
+              },
+              include: [ {
+                model: Vote,
+                as: 'votes',
+                attributes: {
+                  exclude: [ 'user_id', 'playlist_track_id' ]
+                },
+                where: {
+                  rating: {
+                    [ Op.ne ]: null
+                  }
+                },
+
+              }, {
+                model: Track,
+                as: 'track'
+              } ]
+            }).then(resPLT => {
+              if (resPLT) {
+                const resultPLT = [];
+                resPLT.map(item => {
+                  const { track, votes } = item;
+                  track.dataValues.votes = votes;
+                  resultPLT.push(track);
+                });
+                res.send(resultPLT);
+              }
+              else {
+                res.status(404).json({
+                  message: "Playlist not found."
+                })
+              }
+            });
+
+            // Playlist.findAll({
+            //   where: {
+            //     id: parseInt(req.params.id)
+            //   },
+            //   include: [ {
+            //     model: Track,
+            //     as: 'tracks',
+            //     include: [ {
+            //       all: true
+            //     } ],
+            //     where: {
+            //       id: {
+            //         [ Op.notIn ]: usersTracks
+            //       }
+            //     }
+            //   } ]
+            // }).then(async resPT => {
+            //   if (resPT) {
+            //     const result = []
+            //     await resPT.map(item => {
+            //       result.push(...item.tracks);
+            //     });
+            //     res.status(200).json(resPT);
+            //   }
+            //   else {
+            //     res.status(403).json({
+            //       message: "You can't vote in this playlist."
+            //     })
+            //   }
+            // })
+          }
+        });
+      }
+
+    }
+    catch (e) {
+      console.warn(e);
+    }
   }
 }

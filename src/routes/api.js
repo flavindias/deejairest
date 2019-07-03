@@ -113,6 +113,10 @@ var APIRoutes = function(passport) {
         passport.authenticate('bearer', { session: false }),
         playlistController.availableTracks
     );
+    router.get('/playlists/:id/tracks',
+        passport.authenticate('bearer', { session: false }),
+        playlistController.finalTracks
+    );
     router.post('/playlists',
         passport.authenticate('bearer', { session: false }),
         playlistController.add
