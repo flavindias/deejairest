@@ -1,6 +1,6 @@
 const axios = require('axios');
 const Track = require('../models/Track');
-const UserTrack = require('../models/UserTracks');
+const UserTrack = require('../models/UserTrack');
 const Artist = require('../models/Artist');
 const TrackArtist = require('../models/TrackArtist');
 const ArtistGenre = require('../models/ArtistGenre');

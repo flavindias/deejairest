@@ -65,5 +65,5 @@ var modelOptions = {
 }
 
 var Feature = db.define('feature', modelDefinition, modelOptions);
-// Feature.belongsTo(Track, { as: 'feature', foreignKey: 'track_id' });
+// Feature.belongsTo(Track);
 module.exports = Feature;

@@ -2,11 +2,12 @@ const uuidv4 = require('uuid/v4');
 const Room = require('../models/Room');
 const RoomUser = require('../models/RoomUser');
 const Playlist = require('../models/Playlist');
-const PlaylistTrack = require('../models/PlaylistTrack');
+const Feature = require('../models/Feature');
 const Track = require('../models/Track');
 const User = require('../models/User');
 const Artist = require('../models/Artist');
 const Genre = require('../models/Genre');
+const UserTrack = require('../models/UserTrack');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -189,6 +190,11 @@ module.exports = {
             if (result) {
                 res.send(result)
             }
+            else {
+                res.status(404).json({
+                    message: "Room not found."
+                })
+            }
         })
 
     },
@@ -315,6 +321,62 @@ module.exports = {
                     message: "Room not found."
                 })
             }
+        })
+    },
+    generatePlaylist: async (req, res) => {
+        Room.findOne({
+            where: {
+                code: req.params.code
+            },
+            include: [ {
+                model: User,
+                as: 'owner',
+            }, {
+                model: User,
+                as: 'members'
+            } ]
+        }).then(async resRo => {
+            let result = []
+            let retorno = []
+            if (resRo) {
+
+                const { id } = resRo.dataValues.owner
+                result.push(id)
+                resRo.dataValues.members.map(member => {
+                    result.push(member.dataValues.id)
+                })
+                UserTrack.findAll({
+                    where: {
+                        user_id: {
+                            [ Op.in ]: result
+                        }
+                    }
+                }).then(async resUT => {
+                    Promise.all(resUT.map(async ut => {
+                        await Feature.findOne({
+                            where: {
+                                track_id: ut.dataValues.track_id
+                            }
+                        }).then(resFt => {
+                            if (resFt) {
+                                ut.dataValues.feature = resFt
+                                retorno.push(ut)
+                            }
+                        })
+                    })).then(resultp => {
+                        res.send(retorno)
+                        console.log(result)
+                    });
+
+
+
+
+                })
+            }
+            else {
+                res.status(404)
+            }
+
         })
     }
 }

@@ -44,4 +44,5 @@ var modelOptions = {
 
 var Track = db.define('track', modelDefinition, modelOptions);
 Track.belongsToMany(Artist, { as: 'artists', through: 'tracks_artists', foreignKey: 'track_id', otherKey: 'artist_id' });
+// Track.hasOne(Feature, { as: 'feature', foreignKey: 'track_id' });
 module.exports = Track;

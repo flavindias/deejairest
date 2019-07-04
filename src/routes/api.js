@@ -97,6 +97,9 @@ var APIRoutes = function(passport) {
     router.get('/rooms/:code/invite',
         roomController.simpleView
     );
+    router.post('/rooms/:code/ia',
+        roomController.generatePlaylist
+    );
     router.delete('/rooms/:code/:user_id',
         passport.authenticate('bearer', { session: false }),
         roomController.remove

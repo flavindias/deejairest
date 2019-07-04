@@ -50,7 +50,7 @@ function hookBearerStrategy (passport) {
                     )
                 }
                 else {
-                    // console.log(response.responseonse.config.responseonse)
+                    console.log(response.response);
                     done(response.response);
                 }
             }

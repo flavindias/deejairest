@@ -2,7 +2,7 @@
 
 const Sequelize = require('sequelize'),
     db = require('../../services/database');
-
+const Track = require('./Track');
 
 var modelDefinition = {
     id: {
@@ -75,5 +75,5 @@ var modelOptions = {
 
 // 3: Definindo o model de Individual.
 var User = db.define('user', modelDefinition, modelOptions);
-
+User.belongsToMany(Track, { as: 'tracks', through: 'users_tracks', foreignKey: 'user_id', otherKey: 'track_id' });
 module.exports = User;

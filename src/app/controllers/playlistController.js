@@ -3,7 +3,7 @@ const RoomUser = require('../models/RoomUser');
 const Playlist = require('../models/Playlist');
 const PlaylistTrack = require('../models/PlaylistTrack');
 const Vote = require('../models/Vote');
-const UserTrack = require('../models/UserTracks');
+const UserTrack = require('../models/UserTrack');
 const Track = require('../models/Track');
 const Artist = require('../models/Artist');
 const Genre = require('../models/Genre');
@@ -549,5 +549,8 @@ module.exports = {
     catch (e) {
       console.warn(e);
     }
+  },
+  ia: (req, res) => {
+
   }
 }
