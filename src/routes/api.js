@@ -98,6 +98,10 @@ var APIRoutes = function(passport) {
         roomController.simpleView
     );
     router.post('/rooms/:code/ia',
+        passport.authenticate('bearer', { session: false }),
+        roomController.listFromIA
+    );
+    router.get('/rooms/:code/ia',
         roomController.generatePlaylist
     );
     router.delete('/rooms/:code/:user_id',

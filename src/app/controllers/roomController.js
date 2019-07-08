@@ -1,3 +1,4 @@
+const axios = require('axios');
 const uuidv4 = require('uuid/v4');
 const Room = require('../models/Room');
 const RoomUser = require('../models/RoomUser');
@@ -378,5 +379,42 @@ module.exports = {
             }
 
         })
+    },
+    listFromIA: async (req, res) => {
+        try {
+            const response = await axios.post(
+                "http://localhost:5000/generateGrade",
+                {
+                    code: req.body.code
+                }
+            )
+            if (response) {
+                Track.findAll({
+                    where: {
+                        id: {
+                            [ Op.in ]: response.data
+                        }
+                    }
+                    , include: [ {
+                        all: true
+
+                    } ]
+                }).then(resTrack => {
+                    if (resTrack) {
+                        res.status(200).json(resTrack);
+                    }
+                    else {
+                        res.status(404)
+                    }
+                })
+            }
+            else {
+                res.status(404)
+            }
+        }
+        catch (e) {
+            res.status(500).json(e)
+        }
+
     }
 }
