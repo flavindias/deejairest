@@ -9,6 +9,7 @@ const User = require('../models/User');
 const Artist = require('../models/Artist');
 const Genre = require('../models/Genre');
 const UserTrack = require('../models/UserTrack');
+const PlaylistTrack = require('../models/PlaylistTrack');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -382,35 +383,95 @@ module.exports = {
     },
     listFromIA: async (req, res) => {
         try {
-            const response = await axios.post(
-                "http://localhost:5000/generateGrade",
-                {
+            Room.findOne({
+                where: {
                     code: req.body.code
-                }
-            )
-            if (response) {
-                Track.findAll({
-                    where: {
-                        id: {
-                            [ Op.in ]: response.data
-                        }
-                    }
-                    , include: [ {
-                        all: true
-
+                },
+                include: [ {
+                    model: Playlist,
+                    as: 'playlists',
+                    include: [ {
+                        model: Track,
+                        as: 'tracks',
+                        include: [ {
+                            all: true
+                        } ]
                     } ]
-                }).then(resTrack => {
-                    if (resTrack) {
-                        res.status(200).json(resTrack);
-                    }
-                    else {
-                        res.status(404)
-                    }
-                })
-            }
-            else {
-                res.status(404)
-            }
+                } ]
+            }).then(async resRoom => {
+
+
+                if (resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA").length !== 0) {
+
+                    console.log(resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA"))
+                    res.status(200).json(resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA")[ 0 ].tracks)
+                }
+                else {
+
+                    await axios.post(
+                        "http://localhost:5000/generateGrade",
+                        {
+                            code: req.body.code
+                        }
+                    ).then(async response => {
+                        if (response) {
+                            await Playlist.create({
+                                approach: 'IA',
+                                room_id: resRoom.dataValues.id,
+                                user_id: req.user.dataValues.id
+
+                            }).then(async resPl => {
+                                await response.data.map(
+                                    track => {
+                                        PlaylistTrack.findOrCreate({
+                                            where: {
+                                                playlist_id: resPl.dataValues.id,
+                                                track_id: track
+                                            },
+                                            defaults: {
+                                                playlist_id: resPl.dataValues.id,
+                                                track_id: track,
+                                                user_id: req.user.dataValues.id,
+                                                active: true,
+                                                createdAt: new Date(),
+                                                updatedAt: new Date()
+                                            },
+                                            include: [ {
+                                                all: true
+                                            } ]
+                                        })
+                                    }
+                                )
+                                await Track.findAll({
+                                    where: {
+                                        id: {
+                                            [ Op.in ]: response.data
+                                        }
+                                    },
+                                    include: [ {
+                                        all: true
+
+                                    } ]
+                                }).then(resTrack => {
+                                    if (resTrack) {
+                                        res.status(200).json(resTrack);
+                                    }
+                                    else {
+                                        res.status(404)
+                                    }
+                                })
+                            })
+                        }
+                        else {
+                            res.status(404)
+                        }
+                    })
+
+
+                }
+
+            })
+
         }
         catch (e) {
             res.status(500).json(e)
