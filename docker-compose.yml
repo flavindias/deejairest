@@ -8,16 +8,3 @@ services:
       - "3000:3000"
     volumes:
       - .:/usr/app #qual pasta está observando
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
-  mysql:
-    image: mysql:5.7.24
-    ports:
-      - "3307:3306"
-    volumes:
-      - data:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=app_development
