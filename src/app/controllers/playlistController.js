@@ -482,7 +482,7 @@ module.exports = {
 
             const resps = { ...result }
             console.log(resps)
-            res.status(200).json(resps)
+            res.status(200).json(resps[ 0 ])
             // reees.map(async track => {
             //   usersTracks.push(track.dataValues.track_id);
             // });
