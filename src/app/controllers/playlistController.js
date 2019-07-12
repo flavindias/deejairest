@@ -481,7 +481,7 @@ module.exports = {
             const rest = reees.map((item) => { return item.dataValues.tracks.length != 0 && result.push(item.dataValues.tracks) })
 
 
-            res.send(...result)
+            res.status(200).json(...result)
             // reees.map(async track => {
             //   usersTracks.push(track.dataValues.track_id);
             // });
