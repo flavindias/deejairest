@@ -421,6 +421,7 @@ module.exports = {
                                 user_id: req.user.dataValues.id
                             }).then(async resPl => {
                                 if (resPl) {
+                                    console.log(response.data)
                                     await response.data.map(
                                         track => {
                                             PlaylistTrack.findOrCreate({
