@@ -27,7 +27,7 @@ var modelOptions = {
 
 }
 
-var Genre = db.define('Genre', modelDefinition, modelOptions);
+var Genre = db.define('genre', modelDefinition, modelOptions);
 // Room.belongsTo(User, {as: 'owner', foreignKey: 'owner_id'});
 // Room.belongsToMany(Track, {as: 'tracks', through: 'rooms_tracks', foreignKey: 'room_id', otherKey: 'track_id'});
 // Room.belongsToMany(User, {as: 'members', through: 'rooms_users', foreignKey: 'room_id', otherKey: 'user_id'});

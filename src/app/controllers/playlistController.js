@@ -7,6 +7,7 @@ const UserTrack = require('../models/UserTrack');
 const Track = require('../models/Track');
 const Artist = require('../models/Artist');
 const Genre = require('../models/Genre');
+const User = require('../models/User');
 const Op = require('sequelize').Op;
 
 module.exports = {
@@ -19,7 +20,8 @@ module.exports = {
       // Checar se a playlist pertence a sala
       await Playlist.findOne({
         where: {
-          id: parseInt(req.params.id)
+          id: parseInt(req.params.id),
+          approach: 'USER'
         }
       }).then(
         async resp => {
@@ -73,6 +75,7 @@ module.exports = {
                   defaults: {
                     track_id: track.dataValues.track_id,
                     playlist_id: parseInt(req.params.id),
+                    user_id: req.user.dataValues.id,
                     active: true,
                     createdAt: new Date(),
                     updatedAt: new Date()
@@ -99,111 +102,166 @@ module.exports = {
   vote: async (req, res) => {
     try {
       let allowUser = false;
+      let roomid = 0;
+      let owner_id = 0
       // Checar se a playlist pertence a sala
-      await Playlist.findOne({
+      let resp = await Playlist.findOne({
         where: {
           id: parseInt(req.params.id)
         }
-      }).then(
-        async resp => {
-          if (resp) {
-            // Checar se o usuário pertece a sala
-            await Room.findOne({
-              where: {
-                id: resp.dataValues.room_id,
-                owner_id: req.user.dataValues.id
-              }
-            }).then(res => {
-              if (res.lenght !== 0) {
-                allowUser = true
-              }
-              else {
-                RoomUser.findOne({
-                  where: {
-                    user_id: req.user.dataValues.id,
-                    room_id: resp.dataValues.room_id
-                  }
-                }).then(respRU => {
-                  if (respRU) {
-                    allowUser = true
-                  }
-                });
-              }
-            });
+      });
+      if (resp) {
+        roomid = resp.dataValues.room_id
+        let resu = await Room.findOne({
+          where: {
+            id: resp.dataValues.room_id,
+            owner_id: req.user.dataValues.id
           }
-          else {
-            res.status(404).json({
-              message: 'Playlist not found'
-            })
+        })
+        if (resu) {
+          allowUser = true
+          owner_id = req.user.dataValues.id
+        }
+        else {
+          let respRU = await RoomUser.findAll({
+            where: {
+              user_id: req.user.dataValues.id,
+              room_id: resp.dataValues.room_id
+            }
+          })
+          if (respRU) {
+            console.log(respRU)
+            owner_id = respRU.dataValues.owner_id
+            allowUser = true
           }
         }
-      )
+      }
+      else {
+        res.status(404).json({
+          message: 'Playlist not found'
+        })
+      }
 
       if (allowUser) {
-        // Checar se a música pertence a playlist
         let usersTracks = []
-        await UserTrack.findAll({
+        let users = []
+        users.push(owner_id)
+
+        console.log(`users: ${users}`)
+        await RoomUser.findAll({
           where: {
-            user_id: req.user.dataValues.id
+            room_id: roomid
           }
-        }).then(async resUsr => {
-          if (resUsr) {
-            resUsr.map(async track => {
-              usersTracks.push(track.dataValues.track_id);
-            });
-            if (!usersTracks.includes(req.body.track_id)) {
-              await PlaylistTrack.findOne({
-                where: {
-                  track_id: req.body.track_id,
-                  playlist_id: parseInt(req.params.id)
-                }
-              }).then(async resPT => {
-                if (resPT) {
-                  Vote.findOrCreate({
-                    where: {
-                      playlist_track_id: resPT.dataValues.id,
-                      user_id: req.user.dataValues.id
-                    },
-                    defaults: {
-                      playlist_track_id: resPT.dataValues.id,
-                      user_id: req.user.dataValues.id,
-                      rating: req.body.rating,
-                      active: true,
-                      createdAt: new Date(),
-                      updatedAt: new Date()
-                    }
-                  }).then(([ vote, created ]) => {
-                    if (vote) {
-                      if (created) {
-                        res.status(201).json({
-                          message: 'Vote has been registred.'
-                        });
-                      }
-                      else {
-                        vote.rating = req.body.rating
-                        vote.save()
-                        res.status(200).json({
-                          message: 'Vote has been updated'
-                        });
-                      }
-                    }
-                  })
-                }
-                else {
-                  res.status(403).json({
-                    message: "You can't vote in this playlist."
-                  })
-                }
-              })
-            }
-            else {
-              res.status(403).json({
-                message: "You can't vote in your music."
-              })
-            }
-            res.status(201);
-          }
+        }).then(resRU => {
+
+          resRU.map(usr => {
+            users.push(usr.dataValues.user_id)
+          })
         });
+        // users = Array.from(new Set(users)).sort()
+        var index = users.indexOf(req.user.dataValues.id);
+        if (index > -1) {
+          users.splice(index, 1);
+        }
+        User.findAll({
+          where: {
+            id: {
+              [ Op.in ]: users
+            }
+          },
+          include: [ {
+            model: Track,
+            as: 'tracks',
+            where: {
+              id: req.body.track_id
+            },
+            include: [ {
+              all: true
+            } ]
+          } ]
+        }).then(
+          resu => {
+            console.log(resu)
+            PlaylistTrack.findOrCreate(
+              {
+                where: {
+                  playlist_id: req.params.id,
+                  track_id: req.body.track_id
+                },
+                defaults: {
+                  playlist_id: req.params.id,
+                  user_id: req.user.dataValues.id,
+                  track_id: req.body.track_id,
+                  active: true,
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                }
+              }
+            ).then((resPT, create) => {
+
+              if (resPT[ 0 ]) {
+
+                Vote.findOrCreate({
+                  where: {
+                    playlist_track_id: resPT[ 0 ].dataValues.id,
+                    user_id: req.user.dataValues.id
+                  },
+                  defaults: {
+                    playlist_track_id: resPT[ 0 ].dataValues.id,
+                    user_id: req.user.dataValues.id,
+                    rating: req.body.rating,
+                    active: true,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                  }
+                }).then(([ vote, created ]) => {
+                  if (vote) {
+                    if (created) {
+                      res.status(201).json({
+                        message: 'Vote has been registred.'
+                      });
+                    }
+                    else {
+                      vote.rating = req.body.rating
+                      vote.save()
+                      res.status(200).json({
+                        message: 'Vote has been updated'
+                      });
+                    }
+                  }
+                })
+              }
+
+            })
+          }
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
       else {
         res.status(403).json({
@@ -240,7 +298,6 @@ module.exports = {
       }).then(
         async resp => {
           if (resp) {
-            console.log(resp);
             // Checar se o usuário pertece a sala
             Room.findOne({
               where: {
@@ -342,88 +399,153 @@ module.exports = {
   availableTracks: async (req, res) => {
     try {
       let allowUser = false;
+      let roomid = 0;
+      let owner_id = 0
       // Checar se a playlist pertence a sala
-      await Playlist.findOne({
+      let resp = await Playlist.findOne({
         where: {
           id: parseInt(req.params.id)
         }
-      }).then(
-        async resp => {
-          if (resp) {
-            // Checar se o usuário pertece a sala
-            await Room.findOne({
-              where: {
-                id: resp.dataValues.room_id,
-                owner_id: req.user.dataValues.id
-              }
-            }).then(res => {
-              if (res.lenght !== 0) {
-                allowUser = true
-              }
-              else {
-                RoomUser.findOne({
-                  where: {
-                    user_id: req.user.dataValues.id,
-                    room_id: resp.dataValues.room_id
-                  }
-                }).then(respRU => {
-                  if (respRU) {
-                    allowUser = true
-                  }
-                });
-              }
-            });
+      });
+      if (resp) {
+        roomid = resp.dataValues.room_id
+        let resu = await Room.findOne({
+          where: {
+            id: resp.dataValues.room_id,
+            owner_id: req.user.dataValues.id
           }
-          else {
-            res.status(404).json({
-              message: 'Playlist not found'
-            })
+        })
+        if (resu) {
+          allowUser = true
+          owner_id = req.user.dataValues.id
+        }
+        else {
+          let respRU = await RoomUser.findAll({
+            where: {
+              user_id: req.user.dataValues.id,
+              room_id: resp.dataValues.room_id
+            }
+          })
+          if (respRU) {
+            console.log(respRU)
+            owner_id = respRU.dataValues.owner_id
+            allowUser = true
           }
         }
-      )
-
+      }
+      else {
+        res.status(404).json({
+          message: 'Playlist not found'
+        })
+      }
       if (allowUser) {
         // Checar se a música pertence a playlist
         let usersTracks = []
-        await UserTrack.findAll({
-          where: {
-            user_id: req.user.dataValues.id
-          }
-        }).then(async resUsr => {
-          if (resUsr) {
-            resUsr.map(async track => {
-              usersTracks.push(track.dataValues.track_id);
-            });
+        let users = []
+        users.push(owner_id)
 
-            Playlist.findAll({
-              where: {
-                id: parseInt(req.params.id)
-              },
-              include: [ {
-                model: Track,
-                as: 'tracks',
-                where: {
-                  id: {
-                    [ Op.notIn ]: usersTracks
-                  }
-                }
-              } ]
-            }).then(async resPT => {
-              if (resPT) {
-                const result = []
-                await resPT.map(item => {
-                  result.push(...item.tracks);
-                });
-                res.status(200).json(result);
-              }
-              else {
-                res.status(403).json({
-                  message: "You can't vote in this playlist."
-                })
-              }
-            })
+        console.log(`users: ${users}`)
+        await RoomUser.findAll({
+          where: {
+            room_id: roomid
           }
+        }).then(resRU => {
+          console.log(resRU)
+          resRU.map(usr => {
+            console.log(usr.dataValues.user_id)
+            users.push(usr.dataValues.user_id)
+          })
         });
+        // users = Array.from(new Set(users)).sort()
+        var index = users.indexOf(req.user.dataValues.id);
+        if (index > -1) {
+          users.splice(index, 1);
+        }
+        User.findAll({
+          where: {
+            id: {
+              [ Op.in ]: users
+            }
+          },
+          include: [ {
+            model: Track,
+            as: 'tracks',
+            required: false,
+            include: [ {
+              all: true
+            } ]
+          } ]
+        }).then(
+          async reees => {
+            const result = []
+            const rest = reees.map((item) => { return item.dataValues.tracks.length != 0 && result.push(item.dataValues.tracks) })
+
+
+            res.send(...result)
+            // reees.map(async track => {
+            //   usersTracks.push(track.dataValues.track_id);
+            // });
+          }
+        )
+
+        // await UserTrack.findAll({
+        //   where: {
+        //     user_id: {
+        //       [ Op.in ]: users
+        //     },
+        //   }
+        // }).then(async resUsr => {
+        //   if (resUsr) {
+        //     if (resUsr) {
+        //       // resUsr.map(async track => {
+        //       //   usersTracks.push(track.dataValues.track_id);
+        //       // });
+        //       const result = []
+        //       await resUsr.map(item => {
+        //         result.push(...item.tracks);
+        //       });
+        //       const rst = []
+        //       result[ 0 ].map(itm => {
+        //         rst.push(...itm)
+        //       })
+        //       res.status(200).json(rst);
+        //     }
+
+
+
+        //     await Playlist.findAll({
+        //       where: {
+        //         id: parseInt(req.params.id)
+        //       },
+        //       include: [ {
+        //         model: Track,
+        //         as: 'tracks',
+        //         include: [ {
+        //           all: true
+        //         } ],
+        //         // where: {
+        //         //   id: {
+        //         //     [ Op.in ]: usersTracks
+        //         //   }
+        //         // }
+        //       } ]
+        //     }).then(async resPT => {
+        //       if (resPT) {
+        //         console.log(resPT)
+        //         const result = []
+        //         // await resPT.map(item => {
+        //         //   result.push(...item.tracks);
+        //         // });
+        //         res.status(200).json(result);
+        //       }
+        //       else {
+        //         res.status(403).json({
+        //           message: "You can't vote in this playlist."
+        //         })
+        //       }
+        //     })
+        //   }
+        // });
       }
       else {
         res.status(403).json({
@@ -433,6 +555,7 @@ module.exports = {
 
     }
     catch (e) {
+      console.log(e)
       res.status(500).json(e);
     }
 

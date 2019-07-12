@@ -385,87 +385,100 @@ module.exports = {
         try {
             Room.findOne({
                 where: {
-                    code: req.body.code
+                    code: req.params.code
                 },
                 include: [ {
                     model: Playlist,
                     as: 'playlists',
+                    required: false,
                     include: [ {
                         model: Track,
                         as: 'tracks',
+                        required: false,
                         include: [ {
                             all: true
                         } ]
                     } ]
                 } ]
             }).then(async resRoom => {
-
-
                 // if (resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA").length !== 0) {
 
                 // console.log(resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA"))
                 // res.status(200).json(resRoom.dataValues.playlists.filter(playlist => playlist.dataValues.approach == "IA")[ 0 ].tracks)
                 // }
                 // else {
-
-                await axios.post(
-                    "http://localhost:5000/generateGrade",
-                    {
-                        code: req.body.code
-                    }
-                ).then(async response => {
-                    if (response) {
-                        await Playlist.create({
-                            approach: 'IA',
-                            room_id: resRoom.dataValues.id,
-                            user_id: req.user.dataValues.id
-
-                        }).then(async resPl => {
-                            await response.data.map(
-                                track => {
-                                    PlaylistTrack.findOrCreate({
+                if (resRoom) {
+                    await axios.post(
+                        "http://localhost:5000/generateGrade",
+                        {
+                            code: req.params.code
+                        }
+                    ).then(async response => {
+                        if (response) {
+                            await Playlist.create({
+                                approach: 'IA',
+                                room_id: resRoom.dataValues.id,
+                                user_id: req.user.dataValues.id
+                            }).then(async resPl => {
+                                if (resPl) {
+                                    await response.data.map(
+                                        track => {
+                                            PlaylistTrack.findOrCreate({
+                                                where: {
+                                                    playlist_id: resPl.dataValues.id,
+                                                    track_id: track
+                                                },
+                                                defaults: {
+                                                    playlist_id: resPl.dataValues.id,
+                                                    track_id: track,
+                                                    user_id: req.user.dataValues.id,
+                                                    active: true,
+                                                    createdAt: new Date(),
+                                                    updatedAt: new Date()
+                                                },
+                                                include: [ {
+                                                    all: true
+                                                } ]
+                                            })
+                                        }
+                                    )
+                                    await Track.findAll({
                                         where: {
-                                            playlist_id: resPl.dataValues.id,
-                                            track_id: track
-                                        },
-                                        defaults: {
-                                            playlist_id: resPl.dataValues.id,
-                                            track_id: track,
-                                            user_id: req.user.dataValues.id,
-                                            active: true,
-                                            createdAt: new Date(),
-                                            updatedAt: new Date()
+                                            id: {
+                                                [ Op.in ]: response.data
+                                            }
                                         },
                                         include: [ {
                                             all: true
+
                                         } ]
+                                    }).then(resTrack => {
+                                        if (resTrack) {
+                                            res.status(200).json(resTrack);
+                                        }
+                                        else {
+                                            res.status(404)
+                                        }
                                     })
                                 }
-                            )
-                            await Track.findAll({
-                                where: {
-                                    id: {
-                                        [ Op.in ]: response.data
-                                    }
-                                },
-                                include: [ {
-                                    all: true
-
-                                } ]
-                            }).then(resTrack => {
-                                if (resTrack) {
-                                    res.status(200).json(resTrack);
-                                }
                                 else {
-                                    res.status(404)
+                                    res.status(400)
                                 }
+
                             })
-                        })
-                    }
-                    else {
-                        res.status(404)
-                    }
-                })
+                        }
+                        else {
+                            res.status(404)
+                        }
+                    })
+                }
+                else {
+                    return res.status(404).json({
+                        message: 'Room not found'
+                    })
+                }
+
+
 
 
                 // }

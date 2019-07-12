@@ -7,6 +7,7 @@ const Op = sequelize.Op;
 config.debug = true;
 
 var localConfig = {
+    // host: process.env.DB_HOST,
     host: 'localhost',
     port: 3306,
     dialect: 'mysql',
@@ -27,7 +28,7 @@ var awsConfig = {
     dialect: 'mysql',
     operatorsAliases: Op, // use Sequelize.Op
     dialectOptions: {
-        ssl:'Amazon RDS'
+        ssl: 'Amazon RDS'
     },
     pool: {
         maxConnections: 8,
@@ -37,14 +38,15 @@ var awsConfig = {
 }
 
 config.db = {
-    user: config.debug ? 'root' : process.env.AWS_RDS_DB_USER,
-    password: config.debug ? '' : process.env.AWS_RDS_DB_PASSWORD,
-    name: config.debug ? 'deejaidb' : process.env.AWS_RDS_DB_NAME
+    // user: process.env.DB_USER,
+    user: 'root',
+    // password: process.env.DB_PASSWORD,
+    password: '',
+    // name: process.env.DB_NAME
+    name: 'deejaidb'
 };
 
-config.front = {
-    url: config.debug ? process.env.CLIENT_FRONT_URL_DEBUG : process.env.CLIENT_FRONT_URL_PROD,
-}
+
 
 
 config.db.details = config.debug ? localConfig : awsConfig;

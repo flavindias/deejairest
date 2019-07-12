@@ -22,7 +22,8 @@ var modelDefinition = {
     required: true
   },
   user_id: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
+    required: true
   },
   active: {
     type: Sequelize.BOOLEAN
