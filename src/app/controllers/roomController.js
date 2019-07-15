@@ -21,28 +21,38 @@ module.exports = {
      */
     index: async (req, res) => {
 
-        let memberRooms = []
+        let idsRooms = []
+
+        await Room.findAll({
+            where: {
+                owner_id: req.user.dataValues.id
+            }
+        }).then(resRoomOwner => {
+            if (resRoomOwner) {
+                resRoomOwner.map(room => {
+                    idsRooms.push(room.dataValues.id);
+                });
+            }
+            else {
+
+            }
+        });
         await RoomUser.findAll({
             where: {
                 user_id: req.user.dataValues.id,
-
             }
         }).then(respRU => {
             if (respRU) {
-                respRU.map(room => {
-                    memberRooms.push(room.dataValues.id);
-                });
+                respRU.map(roomUser => {
+                    idsRooms.push(roomUser.dataValues.room_id)
+                })
             }
         });
 
-        // console.log(req.done)
         await Room.findAll({
             where: {
-                [ Op.or ]: {
-                    owner_id: req.user.dataValues.id,
-                    id: {
-                        [ Op.in ]: memberRooms
-                    }
+                id: {
+                    [ Op.in ]: idsRooms
                 }
             },
             include: [ {
