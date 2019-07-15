@@ -169,45 +169,87 @@ module.exports = {
         )
     },
     //TODO check if user are a member or owner
-    view: (req, res) => {
-        Room.findOne({
-            where: {
-                code: req.params.code
-            },
-            include: [ {
-                model: User,
-                as: 'owner'
-            },
-            {
-                model: Playlist,
-                as: 'playlists',
-                include: [ {
-                    model: Track,
-                    as: 'tracks',
-                    include: [ {
-                        model: Artist,
-                        as: 'artists',
-                        include: [ {
-                            model: Genre,
-                            as: 'genres'
-                        } ]
-                    } ]
-                } ]
-            },
-            {
-                model: User,
-                as: 'members'
-            } ]
-        }).then(result => {
-            if (result) {
-                res.send(result)
-            }
-            else {
-                res.status(404).json({
-                    message: "Room not found."
-                })
-            }
-        })
+    view: async (req, res) => {
+        try {
+            let allowUser = false;
+            // Checar se a playlist pertence a sala
+            await Room.findOne({
+                where: {
+                    code: req.params.code,
+                }
+            }).then(resRoom => {
+                if (resRoom) {
+
+                    if (resRoom.dataValues.owner_id === req.user.dataValues.id) {
+                        allowUser = true
+                    }
+                    else {
+                        RoomUser.findOne({
+                            where: {
+                                user_id: req.user.dataValues.id,
+                                room_id: resRoom.dataValues.id,
+                            }
+                        }).then(respRU => {
+                            if (respRU) {
+                                allowUser = true
+                            }
+                        });
+                    }
+                    if (allowUser) {
+                        Room.findOne({
+                            where: {
+                                code: req.params.code
+                            },
+                            include: [ {
+                                model: User,
+                                as: 'owner'
+                            },
+                            {
+                                model: Playlist,
+                                as: 'playlists',
+                                include: [ {
+                                    model: Track,
+                                    as: 'tracks',
+                                    include: [ {
+                                        model: Artist,
+                                        as: 'artists',
+                                        include: [ {
+                                            model: Genre,
+                                            as: 'genres'
+                                        } ]
+                                    } ]
+                                } ]
+                            },
+                            {
+                                model: User,
+                                as: 'members'
+                            } ]
+                        }).then(result => {
+                            if (result) {
+                                res.send(result)
+                            }
+                            else {
+                                res.status(404).json({
+                                    message: "Room not found."
+                                })
+                            }
+                        })
+                    }
+                    else {
+                        res.status(403)
+                    }
+                }
+                else {
+                    res.status(404).json({ message: "Room not found." })
+                }
+
+            });
+        }
+        catch (e) {
+            res.status(500).json(e)
+
+        }
+
 
     },
     simpleView: (req, res) => {
