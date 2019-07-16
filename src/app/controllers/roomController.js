@@ -175,22 +175,22 @@ module.exports = {
             // Checar se a playlist pertence a sala
             await Room.findOne({
                 where: {
-                    code: req.params.code,
+                    code: req.params.code
                 }
-            }).then(resRoom => {
+            }).then(async resRoom => {
                 if (resRoom) {
-
                     if (resRoom.dataValues.owner_id === req.user.dataValues.id) {
                         allowUser = true
                     }
                     else {
-                        RoomUser.findOne({
+                        await RoomUser.findOne({
                             where: {
                                 user_id: req.user.dataValues.id,
                                 room_id: resRoom.dataValues.id,
                             }
                         }).then(respRU => {
                             if (respRU) {
+                                console.log(respRU)
                                 allowUser = true
                             }
                         });
