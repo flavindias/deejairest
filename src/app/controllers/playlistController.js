@@ -32,8 +32,8 @@ module.exports = {
                 id: resp.dataValues.room_id,
                 owner_id: req.user.dataValues.id
               }
-            }).then(res => {
-              if (res.lenght !== 0) {
+            }).then(resRoom => {
+              if (resRoom.lenght !== 0) {
                 allowUser = true
               }
               else {
@@ -130,7 +130,6 @@ module.exports = {
             }
           })
           if (respRU) {
-            console.log(respRU)
             owner_id = respRU.dataValues.owner_id
             allowUser = true
           }
@@ -181,7 +180,6 @@ module.exports = {
           } ]
         }).then(
           resu => {
-            console.log(resu)
             PlaylistTrack.findOrCreate(
               {
                 where: {
