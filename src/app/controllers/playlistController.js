@@ -303,7 +303,7 @@ module.exports = {
                 owner_id: req.user.dataValues.id
               }
             }).then(respRoom => {
-              if (respRoom.lenght !== 0) {
+              if (respRoom) {
                 res.status(200).json(resp.dataValues.tracks);
               }
               else {
@@ -406,30 +406,37 @@ module.exports = {
         }
       });
       if (resp) {
+        // checar se posso ver e salvar o room_id
         roomid = resp.dataValues.room_id
-        let resu = await Room.findOne({
+        await Room.findOne({
           where: {
             id: resp.dataValues.room_id,
-            owner_id: req.user.dataValues.id
+            // owner_id: req.user.dataValues.id
+          }
+        }).then(async resu => {
+          if (resu.dataValues.owner_id === req.user.dataValues.id) {
+            allowUser = true
+            owner_id = req.user.dataValues.id
+          }
+          else {
+            await RoomUser.findAll({
+              where: {
+                user_id: req.user.dataValues.id,
+                room_id: resp.dataValues.room_id
+              }
+            }).then(respRU => {
+              if (respRU) {
+                owner_id = resu.dataValues.owner_id
+                allowUser = true
+              }
+              else {
+                res.status(403).json({ message: "You can't see that." })
+              }
+            })
+
           }
         })
-        if (resu) {
-          allowUser = true
-          owner_id = req.user.dataValues.id
-        }
-        else {
-          let respRU = await RoomUser.findAll({
-            where: {
-              user_id: req.user.dataValues.id,
-              room_id: resp.dataValues.room_id
-            }
-          })
-          if (respRU) {
-            console.log(respRU)
-            owner_id = respRU.dataValues.owner_id
-            allowUser = true
-          }
-        }
+
       }
       else {
         res.status(404).json({
@@ -441,8 +448,6 @@ module.exports = {
         let usersTracks = []
         let users = []
         users.push(owner_id)
-
-        console.log(`users: ${users}`)
         await RoomUser.findAll({
           where: {
             room_id: roomid
@@ -579,12 +584,12 @@ module.exports = {
                 id: resp.dataValues.room_id,
                 owner_id: req.user.dataValues.id
               }
-            }).then(res => {
-              if (res.lenght !== 0) {
+            }).then(async resRoom => {
+              if (resRoom) {
                 allowUser = true
               }
               else {
-                RoomUser.findOne({
+                await RoomUser.findOne({
                   where: {
                     user_id: req.user.dataValues.id,
                     room_id: resp.dataValues.room_id
