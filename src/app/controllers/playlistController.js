@@ -346,12 +346,12 @@ module.exports = {
           id: req.body.room_id,
           owner_id: req.user.dataValues.id
         }
-      }).then(res => {
-        if (res.lenght !== 0) {
+      }).then(async resRoom => {
+        if (resRoom) {
           allowUser = true
         }
         else {
-          RoomUser.findOne({
+          await RoomUser.findOne({
             where: {
               user_id: req.user.dataValues.id,
               room_id: req.body.room_id,

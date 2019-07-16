@@ -190,7 +190,6 @@ module.exports = {
                             }
                         }).then(respRU => {
                             if (respRU) {
-                                console.log(respRU)
                                 allowUser = true
                             }
                         });
