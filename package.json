@@ -55,7 +55,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^4.0.0",
     "passport-spotify": "^1.0.1",
-    "sequelize": "^5.15.1",
+    "sequelize": "^6.29.0",
     "socket.io": "^2.4.0",
     "uuid": "^3.3.2"
   },
